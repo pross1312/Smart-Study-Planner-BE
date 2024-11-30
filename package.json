@@ -1,0 +1,39 @@
+{
+  "name": "smart-study-planner-be",
+  "version": "0.0.0",
+  "description": "Backend for Smart Study Planner project",
+  "main": "src/main.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "tsc -b && node dist/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pross1312/Smart-Study-Planner-BE.git"
+  },
+  "keywords": [
+    "AI",
+    "study",
+    "planner",
+    "backend",
+    "expressjs"
+  ],
+  "author": "21127617-21127720-21127725",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pross1312/Smart-Study-Planner-BE/issues"
+  },
+  "homepage": "https://github.com/pross1312/Smart-Study-Planner-BE#readme",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "pg-promise": "^11.10.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "typescript": "^5.7.2"
+  }
+}
