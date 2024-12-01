@@ -5,6 +5,7 @@ import {configPassport} from "./config/passport-config";
 import {repo} from "./repository/postgreSQL";
 import authRoute from "./route/auth.route";
 import {setDebug} from "./log/logger";
+import errorHandler from './middleware/errorHandler';
 
 setDebug(true);
 
@@ -18,6 +19,7 @@ const session_handler = session({
     saveUninitialized: false,
 })
 app.use(session_handler);
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 configPassport(app);
@@ -26,6 +28,7 @@ app.use("/auth", authRoute);
 app.get("/", (req: Request, res: Response) => {
     res.send("Hello world");
 });
+app.use(errorHandler);
 
 app.listen(3000, () => {
     console.log("Server started on 'http://localhost:3000'");
