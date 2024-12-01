@@ -6,6 +6,7 @@ import {repo} from "./repository/postgreSQL";
 import authRoute from "./route/auth.route";
 import {setDebug} from "./log/logger";
 import errorHandler from './middleware/errorHandler';
+import cors from 'cors'
 
 setDebug(true);
 
@@ -18,6 +19,11 @@ const session_handler = session({
     resave: false,
     saveUninitialized: false,
 })
+app.use(cors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+}));
 app.use(session_handler);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
