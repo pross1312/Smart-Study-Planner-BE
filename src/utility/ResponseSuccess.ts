@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 
-const successHandler = (res: Response, data: any, status: number = 200 ) => {
-    res.status(status).json({
-        success: 'true',
-        status,
+const successHandler = (res: Response, data: any, statusCode: number = 200 ) => {
+    res.status(statusCode).json({
+        success: true,
+        statusCode,
         data,
     });
 };

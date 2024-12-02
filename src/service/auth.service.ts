@@ -34,7 +34,7 @@ class AuthService {
 
     private generateToken = (userId: string) => {
         const payload = { userId };
-        const options = { expiresIn: process.env.JWT_EXPIRED };
+        const options = { expiresIn: process.env.JWT_EXPIRED || 3600 }; // 1h
         return jwt.sign(payload, process.env.JWT_SECRET || "UN", options);
     };
 }

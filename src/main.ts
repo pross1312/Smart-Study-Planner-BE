@@ -1,12 +1,11 @@
 require("dotenv").config();
 
-import express, {Express, Request, Response} from "express";
+import express, {Express, Request, Response, NextFunction} from "express";
 import {configPassport} from "./config/passport-config";
 import {repo} from "./repository/postgreSQL";
 import authRoute from "./route/auth.route";
-import {setDebug} from "./log/logger";
+import {debugLog, setDebug} from "./log/logger";
 import errorHandler from './middleware/errorHandler';
-import cors from 'cors'
 
 setDebug(true);
 
@@ -19,11 +18,18 @@ const session_handler = session({
     resave: false,
     saveUninitialized: false,
 })
-app.use(cors({
-    origin: '*',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-}));
+app.use((req: Request, _res: Response, next: NextFunction) => {
+    debugLog(req.path);
+    next();
+});
+app.use((req: Request, res: Response, next: NextFunction) => { // cors
+    // res.appendHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+    res.appendHeader("Access-Control-Allow-Origin", "*");
+    res.appendHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+    res.appendHeader("Access-Control-Allow-Headers", "*");
+    res.appendHeader("Access-Control-Allow-Credentials", "true");
+    next();
+});
 app.use(session_handler);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,9 +37,6 @@ app.use(express.urlencoded({ extended: true }));
 configPassport(app);
 
 app.use("/auth", authRoute);
-app.get("/", (req: Request, res: Response) => {
-    res.send("Hello world");
-});
 app.use(errorHandler);
 
 app.listen(3000, () => {
