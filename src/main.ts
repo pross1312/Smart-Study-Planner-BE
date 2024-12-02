@@ -10,7 +10,7 @@ import {CLIENT_ADDR} from "./config/common";
 
 setDebug(true);
 
-repo.initIfNotExist("./src/init.sql", true);
+repo.initIfNotExist("./src/init.sql", false);
 
 const app: Express = express();
 const session = require("express-session");
@@ -19,6 +19,10 @@ const session_handler = session({
     resave: false,
     saveUninitialized: false,
 })
+
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
 app.use((req: Request, _res: Response, next: NextFunction) => {
     debugLog(req.path);
     next();
@@ -31,6 +35,7 @@ app.use((req: Request, res: Response, next: NextFunction) => { // cors
     res.appendHeader("Access-Control-Allow-Credentials", "true");
     next();
 });
+
 app.use(session_handler);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
