@@ -5,7 +5,7 @@ import successHandler from '../utility/ResponseSuccess';
 class authController {
     async register(req: Request, res: Response, next: NextFunction) {
         try {
-            const response = await authService.register(req.body.username, req.body.password);
+            const response = await authService.register(req.body.email, req.body.password);
             successHandler(res, response);
         } catch (error) {
             next(error); 
@@ -14,7 +14,7 @@ class authController {
 
     async login(req: Request, res: Response, next: NextFunction) {
         try {
-            const response = await authService.login(req.body.username, req.body.password)
+            const response = await authService.login(req.body.email, req.body.password)
             successHandler(res, response);
         } catch (error) {
             next(error)
