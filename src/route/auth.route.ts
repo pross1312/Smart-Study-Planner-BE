@@ -12,18 +12,11 @@ router.get("/google", passport.authenticate("google", {
 router.get("/google/callback", (req, res, next) => {
     debugLog("Google callback called.");
     next()
-}, passport.authenticate("google"), async (req, res) => {
-    debugLog("Google logged in successfully.");
-    res.redirect("/");
-});
+}, passport.authenticate("google"), authController.googleLogin);
 
-router.post("/login", (req, res, next) => {
-    authController.login(req, res, next);
-})
+router.post("/login", authController.login);
 
-router.post("/register", (req, res, next) => {
-    authController.register(req, res, next);
-})
+router.post("/register", authController.register);
 
 export default router;
 

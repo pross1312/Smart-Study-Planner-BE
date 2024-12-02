@@ -6,6 +6,7 @@ import {repo} from "./repository/postgreSQL";
 import authRoute from "./route/auth.route";
 import {debugLog, setDebug} from "./log/logger";
 import errorHandler from './middleware/errorHandler';
+import {CLIENT_ADDR} from "./config/common";
 
 setDebug(true);
 
@@ -24,8 +25,8 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 });
 app.use((req: Request, res: Response, next: NextFunction) => { // cors
     // res.appendHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-    res.appendHeader("Access-Control-Allow-Origin", "*");
-    res.appendHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+    res.appendHeader("Access-Control-Allow-Origin", CLIENT_ADDR);
+    res.appendHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
     res.appendHeader("Access-Control-Allow-Headers", "*");
     res.appendHeader("Access-Control-Allow-Credentials", "true");
     next();
