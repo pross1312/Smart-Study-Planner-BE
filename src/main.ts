@@ -4,6 +4,7 @@ import express, {Express, Request, Response, NextFunction} from "express";
 import {configPassport} from "./config/passport-config";
 import {repo} from "./repository/postgreSQL";
 import authRoute from "./route/auth.route";
+import taskRoute from "./route/task.route";
 import {debugLog, setDebug} from "./log/logger";
 import errorHandler from './middleware/errorHandler';
 import {CLIENT_ADDR} from "./config/common";
@@ -43,6 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 configPassport(app);
 
 app.use("/auth", authRoute);
+app.use("/task", taskRoute)
 app.use(errorHandler);
 
 app.listen(3000, () => {
