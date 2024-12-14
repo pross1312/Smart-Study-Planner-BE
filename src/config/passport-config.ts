@@ -4,18 +4,19 @@ import {debugLog} from "../log/logger";
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-passport.serializeUser((profile: User, done: (error: any, email: string) => void) => {
+passport.serializeUser((profile: User, done: (error: any, user_id: number) => void) => {
     debugLog("serializeUser: profile: ", profile);
-    done(null, profile.email);
+    done(null, profile.id!);
 });
 
-passport.deserializeUser(async (email: string, done: (error: any, user: User | null) => void) => {
-    debugLog("deserializeUser: email: ", email);
-    const user: User | null = await UserModel.findOne({email});
+passport.deserializeUser(async (user_id: number, done: (error: any, user: User | null) => void) => {
+    debugLog("deserializeUser: id: ", user_id);
+    const user: User | null = await UserModel.findOne({id: user_id});
     if (user === null) {
-        console.log(`Can't find user with email: ${email}`);
-        done("Can't deserialize user from email", null);
+        console.log(`Can't find user with id: ${user_id}`);
+        done("Can't deserialize user from id", null);
     } else {
+        debugLog("                 user: ", user);
         done(null, user);
     }
 });

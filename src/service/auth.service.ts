@@ -2,7 +2,7 @@ import { UserModel, User } from '../model/user.model'
 import AppError from '../exception/appError';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-const jwtExpired = process.env.JWT_EXPIRED || '3600';
+const jwtExpired = process.env.JWT_EXPIRED || '1h';
 
 class AuthService {
     async register(email: string, password: string): Promise<string> {
@@ -25,7 +25,7 @@ class AuthService {
         const isPasswordValid = bcrypt.compareSync(password, user.password);
         if (!isPasswordValid)
             throw new AppError("Password wrong", 400);
-        const token = this.generateToken(user.email);
+        const token = this.generateToken(user.id!);
 
         return {
             token,
@@ -33,8 +33,8 @@ class AuthService {
         };
     }
 
-    async googleLogin(email: string): Promise<{token: string, expired: string}> {
-        const token = this.generateToken(email);
+    async googleLogin(user_id: number): Promise<{token: string, expired: string}> {
+        const token = this.generateToken(user_id);
 
         return {
             token,
@@ -42,7 +42,7 @@ class AuthService {
         };
     }
 
-    private generateToken = (userId: string) => {
+    private generateToken = (userId: number) => {
         const payload = { userId };
         const options = { expiresIn: jwtExpired }; // 1h
         return jwt.sign(payload, process.env.JWT_SECRET || "UN", options);

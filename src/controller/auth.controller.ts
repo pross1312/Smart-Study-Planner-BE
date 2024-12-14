@@ -28,7 +28,7 @@ class authController {
         debugLog("Google logged in successfully.");
         try {
             if ('user' in req) {
-                const response = await authService.googleLogin((req.user as User).email)
+                const response = await authService.googleLogin((req.user as User).id!)
                 res.redirect(`${CLIENT_ADDR}/google/callback?token=${response.token}`);
             } else {
                 throw new Error("Missing 'user' from passport, check passport configuration again.");

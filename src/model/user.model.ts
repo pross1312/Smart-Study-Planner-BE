@@ -3,6 +3,7 @@ import {debugLog} from "../log/logger";
 
 type UserKey = "email" | "password" | "name" | "avatar";
 class User {
+    readonly id: number | undefined = undefined;
     email: string;
     password: string | null;
     name: string | null;
@@ -22,7 +23,8 @@ class User {
 const UserModel = {
     save: async (user: User) => {
         const fields: Array<string> = Object.getOwnPropertyNames(user)
-                                            .filter(prop => user[prop as keyof User] !== null &&
+                                            .filter(prop => user[prop as keyof User] !== undefined  &&
+                                                            user[prop as keyof User] !== null &&
                                                             typeof user[prop as keyof User] !== "function");
         const args: Array<string> = Array.from(fields, (field) => user[field as keyof User]!.toString());
         const params: string = Array.from({length: fields.length}, (_, index: number) => index).map(i => `$${i+1}`).join(", ");
@@ -32,6 +34,7 @@ const UserModel = {
     },
 
     find: async (info: {
+        id?: number,
         email?: string,
         password?: string,
         name?: string,
@@ -49,10 +52,11 @@ const UserModel = {
         }
         debugLog(query, args);
         const users: Array<User> = await repo.exec("many", query, args);
-        return users;
+        return users || [];
     },
 
     findOne: async (info: {
+        id?: number,
         email?: string,
         password?: string,
         name?: string,

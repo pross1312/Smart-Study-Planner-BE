@@ -6,6 +6,7 @@ import {repo} from "./repository/postgreSQL";
 import authRoute from "./route/auth.route";
 import {debugLog, setDebug} from "./log/logger";
 import errorHandler from './middleware/errorHandler';
+import {AuthGuard} from './middleware/auth-guard.middleware';
 import {CLIENT_ADDR} from "./config/common";
 
 setDebug(true);
@@ -43,6 +44,7 @@ app.use(express.urlencoded({ extended: true }));
 configPassport(app);
 
 app.use("/auth", authRoute);
+app.use(AuthGuard);
 app.use(errorHandler);
 
 app.listen(3000, () => {

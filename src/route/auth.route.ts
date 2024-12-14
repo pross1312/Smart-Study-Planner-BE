@@ -1,4 +1,4 @@
-import {Router, Request, Response} from "express";
+import {Router} from "express";
 import { debugLog } from "../log/logger";
 import authController from "../controller/auth.controller";
 const passport = require("passport");

@@ -1,6 +1,6 @@
 CREATE TABLE "users"(
-    id bigserial not null unique,
-    email varchar(512) primary key,
+    id bigserial not null unique primary key,
+    email varchar(512) unique not null,
     password varchar(512),
     name varchar(512),
     avatar varchar(512)
@@ -8,9 +8,9 @@ CREATE TABLE "users"(
 
 CREATE TABLE "task"(
     id bigserial not null unique primary key,
-    id_user bigserial not null,
+    user_id bigserial not null,
     name varchar(128) not null,
-    description text,
+    description text default '',
     status varchar(32) default 'TODO', -- 'IN_PROGRESS', 'DONE'
     priority varchar(32) default 'LOW', -- 'MEDIUM', 'HIGH'
     estimate_time int8 default 3600, -- seconds
