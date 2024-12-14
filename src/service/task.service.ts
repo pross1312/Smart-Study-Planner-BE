@@ -7,7 +7,7 @@ function is_valid_enum(value: string, enumObject: any): boolean {
 }
 
 const TaskService = {
-    async list(user_id: number, taskReq: TaskReq): Promise<Array<Task>> {
+    async list(user_id: number, taskReq: TaskReq) {
         taskReq.status = taskReq.status?.toString()?.toUpperCase() as string | null;
         taskReq.priority = taskReq.priority?.toString()?.toUpperCase() as string | null;
 
@@ -23,8 +23,10 @@ const TaskService = {
         if (taskReq.priority && !is_valid_enum(taskReq.priority, TaskPriority)) {
             throw new AppError(`Invalid TaskPriority ${taskReq.priority}, must be one of ${Object.values(TaskPriority)}`, 400);
         }
-        const response = await TaskModel.getListTask(user_id, taskReq);
-        return response;
+        const tasks : Array<Task> = await TaskModel.getListTask(user_id, taskReq);
+        const total : number= await TaskModel.countListTask(user_id, taskReq);
+        const data = { tasks, total };
+        return data as { tasks: Task[], total: number };
     },
 
     async add({user_id, name, description, status, priority, estimate_time}: any): Promise<void> {

@@ -30,8 +30,8 @@ const TaskController = {
                 .priority(priority as string || null)
                 .status(status as string || null)
                 .build();
-            const response: Array<Task> = await TaskService.list(user_id, taskReq);
-            successHandler(res, response);
+            const data = await TaskService.list(user_id, taskReq);
+            successHandler(res, data);
         } catch (err) {
             next(err);
         }

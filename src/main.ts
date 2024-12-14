@@ -8,7 +8,8 @@ import taskRoute from "./route/task.route";
 import {debugLog, setDebug} from "./log/logger";
 import errorHandler from './middleware/errorHandler';
 import {AuthGuard} from './middleware/auth-guard.middleware';
-import {CLIENT_ADDR} from "./config/common";
+import { CLIENT_ADDR } from "./config/common";
+import cors from 'cors'
 
 setDebug(true);
 
@@ -30,14 +31,12 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
     debugLog(req.path);
     next();
 });
-app.use((req: Request, res: Response, next: NextFunction) => { // cors
-    // res.appendHeader("Access-Control-Allow-Origin", "http://localhost:5173");
-    res.appendHeader("Access-Control-Allow-Origin", CLIENT_ADDR);
-    res.appendHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
-    res.appendHeader("Access-Control-Allow-Headers", "*");
-    res.appendHeader("Access-Control-Allow-Credentials", "true");
-    next();
-});
+
+app.use(cors({
+    origin: CLIENT_ADDR,
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+}))
 
 app.use(session_handler);
 app.use(express.json());
@@ -53,3 +52,4 @@ app.use(errorHandler);
 app.listen(3000, () => {
     console.log("Server started on 'http://localhost:3000'");
 });
+

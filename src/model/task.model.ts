@@ -137,6 +137,39 @@ const TaskModel = {
         args.push(limit, offset);
         debugLog(query, args);
         return await repo.exec("many", query, args) || [];
+    },
+
+    async countListTask(user_id: number, taskReq: TaskReq) {
+        debugLog("CountListTask: Task request:", taskReq);
+        const { startDate, endDate, priority, status} = taskReq;
+
+        let args = [];
+        let query = `select COUNT(id) FROM task WHERE user_id = $1 AND is_deleted = false`;
+        let count = 2;
+        args.push(user_id);
+
+        if (startDate) {
+            query += ` AND created_date >= $${count++}`;
+            args.push(startDate);
+        }
+
+        if (endDate) {
+            query += ` AND created_date <= $${count++}`;
+            args.push(endDate);
+        }
+
+        if (priority) {
+            query += ` AND priority = $${count++}`;
+            args.push(priority);
+        }
+
+        if (status) {
+            query += ` AND status = $${count++}`;
+            args.push(status);
+        }
+
+        debugLog(query, args);
+        return await repo.exec("one", query, args) || [];
     }
 };
 
