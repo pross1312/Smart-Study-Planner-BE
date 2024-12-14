@@ -1,5 +1,6 @@
 import {repo} from "../repository/postgreSQL"
 import {debugLog} from "../log/logger";
+import TaskReq from '../exchange/req/task.req';
 
 enum TaskStatus {
     Todo = "TODO",
@@ -101,6 +102,41 @@ const TaskModel = {
         debugLog(query, args);
         const Task: Task | null = await repo.exec("oneOrNone", query, args);
         return Task;
+    },
+
+    async getListTask(user_id: number, taskReq: TaskReq) {
+        debugLog("GetListTask: Task request:", taskReq);
+        const { startDate, endDate, priority, status, limit, offset } = taskReq;
+
+        let args = [];
+        let query = `SELECT * FROM task WHERE user_id = $1 AND is_deleted = false`;
+        let count = 2;
+        args.push(user_id);
+
+        if (startDate) {
+            query += ` AND created_date >= $${count++}`;
+            args.push(startDate);
+        }
+
+        if (endDate) {
+            query += ` AND created_date <= $${count++}`;
+            args.push(endDate);
+        }
+
+        if (priority) {
+            query += ` AND priority = $${count++}`;
+            args.push(priority);
+        }
+
+        if (status) {
+            query += ` AND status = $${count++}`;
+            args.push(status);
+        }
+
+        query += ` ORDER BY updated_date desc LIMIT $${count++} OFFSET $${count++}`;
+        args.push(limit, offset);
+        debugLog(query, args);
+        return await repo.exec("many", query, args) || [];
     }
 };
 

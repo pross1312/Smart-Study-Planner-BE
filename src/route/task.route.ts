@@ -4,7 +4,7 @@ import {TaskController} from "../controller/task.controller";
 
 const router: Router = Router();
 
-router.get("/all", TaskController.list);
-router.post("/add", TaskController.add);
+router.get("/", TaskController.list);
+router.post("/", TaskController.add);
 
 export default router;
