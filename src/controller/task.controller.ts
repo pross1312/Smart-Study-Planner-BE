@@ -42,7 +42,7 @@ const TaskController = {
             const user_id = ((req as any)?.user as any)?.id!;
             const { name, description, status, priority, estimate_time } = req.body;
             await TaskService.add({ user_id, name, description, status, priority, estimate_time });
-            successHandler(res, "Ok");
+            successHandler(res, "Create Task Successful");
         } catch(err) {
             next(err);
         }
