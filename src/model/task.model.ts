@@ -13,7 +13,7 @@ enum TaskPriority {
     High = "HIGH",
 }
 class Task {
-    readonly id: number | undefined;
+    id?: number;
     user_id: number;
     name: string;
     description: string | null;
@@ -41,31 +41,43 @@ class Task {
     }
 }
 const table_name = "task";
+interface TaskFilter {
+    id?: number,
+    user_id?: number,
+    name?: string,
+    description?: string,
+    status?: TaskStatus,
+    priority?: TaskPriority,
+    estimate_time?: number,
+    is_deleted?: boolean,
+}
+interface TaskUpdate {
+    user_id?: number,
+    name?: string,
+    description?: string,
+    status?: TaskStatus,
+    priority?: TaskPriority,
+    estimate_time?: number,
+    is_deleted?: boolean,
+}
 const TaskModel = {
-    save: async (user: Task) => {
-        const fields: Array<string> = Object.getOwnPropertyNames(user)
-                                            .filter(prop => user[prop as keyof Task] !== null &&
-                                                            typeof user[prop as keyof Task] !== "function");
-        const args: Array<string> = Array.from(fields, (field) => user[field as keyof Task]!.toString());
+    save: async (task: Task) => {
+        delete task.id; // use posgresql instead
+        const fields: Array<string> = Object.getOwnPropertyNames(task)
+                                            .filter(prop => task[prop as keyof Task] !== null &&
+                                                            task[prop as keyof Task] !== undefined &&
+                                                            typeof task[prop as keyof Task] !== "function");
+        const args: Array<string> = Array.from(fields, (field) => task[field as keyof Task]!.toString());
         const params: string = Array.from({length: fields.length}, (_, index: number) => index).map(i => `$${i+1}`).join(", ");
         const query: string = `INSERT INTO "${table_name}"(${fields.join(", ")}) VALUES(${params})`;
-        debugLog(query, params, args);
+        debugLog(query, args);
         await repo.exec("none", query, args);
     },
 
-    find: async (info: {
-        id?: number,
-        user_id?: number,
-        name?: string,
-        description?: string,
-        status?: TaskStatus,
-        priority?: TaskPriority,
-        estimate_time?: number,
-        is_deleted?: boolean,
-    }): Promise<Array<Task>> => {
+    find: async (info: TaskFilter): Promise<Array<Task>> => {
         const fields: Array<string> = Object.getOwnPropertyNames(info)
                                             .filter(prop => info[prop as keyof typeof info] !== undefined);
-        const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(", ");
+        const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(" AND ");
         const args: Array<string> = Array.from(fields, (field) => info[field as keyof typeof info]!.toString());
         let query: string;
         if (fields.length > 0) {
@@ -78,19 +90,10 @@ const TaskModel = {
         return tasks || [];
     },
 
-    findOne: async (info: {
-        id?: number,
-        user_id?: number,
-        name?: string,
-        description?: string,
-        status?: TaskStatus,
-        priority?: TaskPriority,
-        estimate_time?: number,
-        is_deleted?: boolean,
-    }): Promise<Task | null> => {
+    findOne: async (info: TaskFilter): Promise<Task | null> => {
         const fields: Array<string> = Object.getOwnPropertyNames(info)
                                             .filter(prop => info[prop as keyof typeof info] !== undefined);
-        const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(", ");
+        const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(" AND ");
         const args: Array<string> = Array.from(fields, (field) => info[field as keyof typeof info]!.toString());
 
         let query: string;
@@ -170,6 +173,33 @@ const TaskModel = {
 
         debugLog(query, args);
         return await repo.exec("one", query, args) || [];
+    },
+
+    async update(filter: TaskFilter, update: TaskUpdate): Promise<boolean> {
+        const to_be_updated_tasks = await TaskModel.find(filter);
+        if (to_be_updated_tasks.length == 0) return false;
+
+        const update_fields: Array<string> = Object.getOwnPropertyNames(update)
+                                            .filter(prop => update[prop as keyof typeof update] !== undefined);
+        if (update_fields.length == 0) {
+            throw new Error("Must provide updates");
+        }
+        let args_count = 1;
+        const update_statement: string = update_fields.map((field, index) => `${field} = $${args_count++}`).join(", ");
+        let args: Array<string> = Array.from(update_fields, (field) => update[field as keyof typeof update]!.toString());
+
+        const filter_fields: Array<string> = Object.getOwnPropertyNames(filter)
+                                            .filter(prop => filter[prop as keyof typeof filter] !== undefined);
+        const filter_condition: string = filter_fields.map((field, index) => `${field} = $${args_count++}`).join(" AND ");
+        args = args.concat(Array.from(filter_fields, (field) => filter[field as keyof typeof filter]!.toString()));
+
+        let query = `UPDATE "${table_name}" SET ${update_statement}, updated_date = (EXTRACT(EPOCH FROM now()) * 1000)`;
+        if (filter_fields.length > 0) {
+            query += ` WHERE ${filter_condition}`;
+        }
+        debugLog(query, args);
+        await repo.exec("none", query, args);
+        return true;
     }
 };
 

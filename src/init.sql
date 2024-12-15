@@ -21,10 +21,10 @@ CREATE TABLE "task"(
 
 CREATE TABLE "todo"(
     id bigserial not null unique primary key,
-    id_task bigserial not null,
-    start_date int8 not null,
-    end_date int8 not null
-);
+    user_id bigserial not null,
+    task_id bigserial not null,
+    start_date int8 not null DEFAULT (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT,
+    end_date int8 not null CHECK(end_date >= start_date) DEFAULT (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT + 3600*24*1000);
 
 -- Inserting 3 example tasks
 INSERT INTO task (user_id, name, description, status, priority, estimate_time, created_date, updated_date, is_deleted)

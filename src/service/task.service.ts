@@ -32,6 +32,9 @@ const TaskService = {
     async add({user_id, name, description, status, priority, estimate_time}: any): Promise<void> {
         status = status?.toString()?.toUpperCase();
         priority = priority?.toString()?.toUpperCase();
+        if (name === undefined) {
+            throw new AppError("Missing name when adding new task", 400);
+        }
         if (status && !is_valid_enum(status, TaskStatus)) {
             throw new AppError(`Invalid TaskStatus ${status}, must be one of ${Object.values(TaskStatus)}`, 400);
         }

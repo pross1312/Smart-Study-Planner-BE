@@ -29,7 +29,7 @@ const UserModel = {
         const args: Array<string> = Array.from(fields, (field) => user[field as keyof User]!.toString());
         const params: string = Array.from({length: fields.length}, (_, index: number) => index).map(i => `$${i+1}`).join(", ");
         const query: string = `INSERT INTO "users"(${fields.join(", ")}) VALUES(${params})`;
-        debugLog(query, params, args);
+        debugLog(query, args);
         await repo.exec("none", query, args);
     },
 
@@ -42,7 +42,7 @@ const UserModel = {
     }): Promise<Array<User>> => {
         const fields: Array<string> = Object.getOwnPropertyNames(info)
                                             .filter(prop => info[prop as keyof typeof info] !== undefined);
-        const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(", ");
+        const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(" AND ");
         const args: Array<string> = Array.from(fields, (field) => info[field as keyof typeof info]!.toString());
         let query: string;
         if (fields.length > 0) {
@@ -64,7 +64,7 @@ const UserModel = {
     }): Promise<User | null> => {
         const fields: Array<string> = Object.getOwnPropertyNames(info)
                                             .filter(prop => info[prop as keyof typeof info] !== undefined);
-        const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(", ");
+        const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(" AND ");
         const args: Array<string> = Array.from(fields, (field) => info[field as keyof typeof info]!.toString());
 
         let query: string;
