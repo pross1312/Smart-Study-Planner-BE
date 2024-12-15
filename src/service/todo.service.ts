@@ -20,7 +20,7 @@ const TodoService = {
         return todos;
     },
 
-    async add(user_id: number, taskId?: number, startDate?: number) {
+    async add(user_id: number, taskId: number, startDate?: number) {
         debugLog(user_id, taskId, startDate);
         if (!Validator.isValue(taskId) || !Validator.isNumber(taskId)) {
             throw new AppError("Invalid or missing taskId in query", 400);
@@ -28,20 +28,20 @@ const TodoService = {
         if (!Validator.isValue(startDate) || !Validator.isNumber(startDate)) {
             throw new AppError("Invalid or missing startDate in query", 400);
         }
-        const task: Task | null = await TaskModel.findOne({user_id, id: taskId});
+        const task: Task | null = await TaskModel.findOne({user_id, id: Number(taskId)});
         if (task === null) {
             throw new AppError("taskId not found", 400);
         }
 
         const todo = new Todo({
             user_id,
-            task_id: taskId,
-            start_date: startDate,
-            end_date: startDate + (task.estimate_time ?? 24*3600)*1000,
+            task_id: Number(taskId),
+            start_date: startDate!,
+            end_date: startDate! + (task.estimate_time ?? 24*3600)*1000,
         });
         await TodoModel.save(todo);
         const now = new Date().getTime();
-        if (now >= startDate) {
+        if (now >= startDate!) {
             if (now >= todo.end_date) {
                 await TaskModel.update({user_id, id: taskId}, {status: TaskStatus.Done});
             } else {

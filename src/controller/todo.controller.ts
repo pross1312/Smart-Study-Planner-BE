@@ -19,7 +19,7 @@ const TodoController = {
     async add(req: Request, res: Response, next: NextFunction) {
         try {
             const user_id = ((req as any)?.user as any)?.id!;
-            const taskId = Number(req.body.taskId);
+            const taskId = req.body.taskId;
             const startDate = req.body.startDate ? new Date(req.body.startDate as string).getTime() : undefined;
             await TodoService.add(user_id, taskId, startDate);
             successHandler(res, "Ok");
