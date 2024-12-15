@@ -52,7 +52,6 @@ interface TaskFilter {
     is_deleted?: boolean,
 }
 interface TaskUpdate {
-    user_id?: number,
     name?: string,
     description?: string,
     status?: TaskStatus,
@@ -175,14 +174,11 @@ const TaskModel = {
         return await repo.exec("one", query, args) || [];
     },
 
-    async update(filter: TaskFilter, update: TaskUpdate): Promise<boolean> {
-        const to_be_updated_tasks = await TaskModel.find(filter);
-        if (to_be_updated_tasks.length == 0) return false;
-
+    async update(filter: TaskFilter, update: TaskUpdate): Promise<number> {
         const update_fields: Array<string> = Object.getOwnPropertyNames(update)
                                             .filter(prop => update[prop as keyof typeof update] !== undefined);
         if (update_fields.length == 0) {
-            throw new Error("Must provide updates");
+            return 0;
         }
         let args_count = 1;
         const update_statement: string = update_fields.map((field, index) => `${field} = $${args_count++}`).join(", ");
@@ -198,10 +194,27 @@ const TaskModel = {
             query += ` WHERE ${filter_condition}`;
         }
         debugLog(query, args);
-        await repo.exec("none", query, args);
-        return true;
+        const result = await repo.exec("result", query, args);
+        debugLog(`Updated ${result.rowCount} from ${table_name}`);
+        return result.rowCount;
+    },
+
+    async delete(filter: TaskFilter): Promise<number> {
+        const fields: Array<string> = Object.getOwnPropertyNames(filter)
+                                            .filter(prop => filter[prop as keyof typeof filter] !== undefined);
+        if (fields.length == 0) {
+            throw new Error("Attempt to delete without any condition");
+        }
+        const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(" AND ");
+        const args: Array<string> = Array.from(fields, (field) => filter[field as keyof typeof filter]!.toString());
+        let query = `DELETE FROM ${table_name} WHERE ${condition}`;
+        debugLog(query, args);
+
+        const result = await repo.exec("result", query, args);
+        console.log("Delete result: ", result);
+        return result.rowCount;
     }
 };
 
-export {TaskModel, Task, TaskStatus, TaskPriority};
+export {TaskModel, Task, TaskStatus, TaskPriority, TaskUpdate};
 

@@ -67,7 +67,7 @@ const repo = {
     },
 
     // NOTE: func: [one, none, ...] check pg-promise connection for more information
-    exec: async (func: "one" | "many" | "none" | "oneOrNone" | "manyOrNone" | "any",
+    exec: async (func: "one" | "many" | "none" | "oneOrNone" | "manyOrNone" | "any" | "result",
                  sql: string,
                  args: Array<string | number> = []) => {
         if (!func || !sql) throw new Error("Missing arguments");

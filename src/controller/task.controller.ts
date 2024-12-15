@@ -46,6 +46,31 @@ const TaskController = {
         } catch(err) {
             next(err);
         }
+    },
+
+    async update(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user_id = ((req as any)?.user as any)?.id!;
+            const {name, description, status, priority, estimate_time, is_deleted} = req.body;
+            const result = await TaskService.update(
+                user_id,
+                req.params.taskId,
+                {name, description, status, priority, estimate_time, is_deleted}
+            );
+            successHandler(res, result);
+        } catch(err) {
+            next(err);
+        }
+    },
+
+    async delete(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user_id = ((req as any)?.user as any)?.id!;
+            const result = await TaskService.delete(user_id, req.params.taskId);
+            successHandler(res, result);
+        } catch(err) {
+            next(err);
+        }
     }
 };
 export {TaskController};
