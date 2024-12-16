@@ -216,5 +216,5 @@ const TaskModel = {
     }
 };
 
-export {TaskModel, Task, TaskStatus, TaskPriority, TaskUpdate};
+export {TaskModel, Task, TaskStatus, TaskPriority, TaskUpdate, TaskFilter};
 

@@ -1,6 +1,6 @@
 import AppError from '../exception/appError';
 import {TodoModel, Todo} from "../model/todo.model";
-import {TaskModel, TaskStatus, Task} from "../model/task.model";
+import {TaskModel, TaskStatus, Task, TaskFilter} from "../model/task.model";
 import {debugLog} from "../log/logger";
 import {Validator} from "../utility/validator";
 
@@ -12,12 +12,21 @@ const TodoService = {
         if (Validator.isValue(endDate) && !Validator.isNumber(endDate)) {
             throw new AppError("Invalid endDate", 400);
         }
-        const todos: Array<Todo> = await TodoModel.findBetween({
-            user_id,
-            start_date: startDate,
-            end_date: endDate
+        const todos: Array<Todo> = await TodoModel.findBetween({user_id, start_date: startDate, end_date: endDate});
+
+        // Include related task information
+        const todosWithTasks = todos.map(async (todo) => {
+            const taskDetails = await TaskModel.findOne({
+                user_id,
+                id: todo.task_id,
+            }); 
+            return {
+                ...todo,
+                task: taskDetails,
+            };
         });
-        return todos;
+
+        return Promise.all(todosWithTasks); 
     },
 
     async add(user_id: number, taskId: number, startDate?: number) {

@@ -4,3 +4,4 @@ dist/
 package-lock.json
 .vercel
 vercel.json
+.yarn
