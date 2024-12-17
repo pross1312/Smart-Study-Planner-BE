@@ -6,6 +6,8 @@ import {repo} from "./repository/postgreSQL";
 import authRoute from "./route/auth.route";
 import taskRoute from "./route/task.route";
 import todoRoute from "./route/todo.route";
+import aiRoute from "./route/ai.route";
+
 import {debugLog, setDebug} from "./log/logger";
 import errorHandler from './middleware/errorHandler';
 import {AuthGuard} from './middleware/auth-guard.middleware';
@@ -49,6 +51,8 @@ app.use("/auth", authRoute);
 app.use(AuthGuard);
 app.use("/task", taskRoute);
 app.use("/todo", todoRoute);
+app.use("/ai", aiRoute);
+
 app.use(errorHandler);
 
 app.listen(3000, () => {
