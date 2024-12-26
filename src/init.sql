@@ -1,30 +1,48 @@
 CREATE TABLE "users"(
-    id bigserial not null unique primary key,
-    email varchar(512) unique not null,
-    password varchar(512),
-    name varchar(512),
-    avatar varchar(512)
+    id bigserial NOT NULL UNIQUE PRIMARY KEY,
+    email VARCHAR(512) UNIQUE NOT NULL,
+    password VARCHAR(512),
+    name VARCHAR(512),
+    avatar VARCHAR(512),
 );
 
 CREATE TABLE "task"(
-    id bigserial not null unique primary key,
-    user_id bigserial not null,
-    name varchar(128) not null,
-    description text default '',
-    status varchar(32) default 'TODO', -- 'IN_PROGRESS', 'DONE'
-    priority varchar(32) default 'LOW', -- 'MEDIUM', 'HIGH'
-    estimate_time int8 default 3600, -- seconds
-    created_date int8 DEFAULT (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT,
-    updated_date int8 DEFAULT (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT,
-    is_deleted boolean default false
+    id BIGSERIAL NOT NULL UNIQUE PRIMARY KEY,
+    user_id BIGSERIAL NOT NULL,
+    name VARCHAR(128) NOT NULL,
+    description TEXT DEFAULT '',
+    status VARCHAR(32) DEFAULT 'TODO', -- 'IN_PROGRESS', 'DONE', 'EXPIRED'
+    priority VARCHAR(32) DEFAULT 'LOW', -- 'MEDIUM', 'HIGH'
+
+    start_time INT8 DEFAULT NULL,                             -- seconds (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT,
+    end_time INT8 CHECK(end_date >= start_date) DEFAULT NULL, -- seconds (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT + 3600*24*1000),
+
+    created_date INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,  -- seconds
+    updated_date INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,  -- seconds
+    is_deleted BOOLEAN DEFAULT FALSE
 );
 
-CREATE TABLE "todo"(
-    id bigserial not null unique primary key,
-    user_id bigserial not null,
-    task_id bigserial not null,
-    start_date int8 not null DEFAULT (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT,
-    end_date int8 not null CHECK(end_date >= start_date) DEFAULT (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT + 3600*24*1000);
+
+CREATE TABLE "pomodoro_history"(
+    id BIGSERIAL NOT NULL UNIQUE PRIMARY KEY,
+    user_id BIGSERIAL NOT NULL,
+    start_time INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT, -- seconds
+    end_time INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,   -- seconds
+    span INT8 DEFAULT 0,
+);
+
+CREATE TABLE "pomodoro_setting"(
+    id BIGSERIAL NOT NULL UNIQUE PRIMARY KEY,
+    pomodoro_time INT8 
+);
+
+CREATE TABLE "ai_history"(
+    id BIGSERIAL NOT NULL UNIQUE PRIMARY KEY,
+    user_id BIGSERIAL NOT NULL,
+    created_date INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,
+    prompt TEXT NOT NULL,
+    answer TEXT NOT NULL,
+);
 
 -- Inserting 3 example tasks
 INSERT INTO task (user_id, name, description, status, priority, estimate_time, created_date, updated_date, is_deleted)
