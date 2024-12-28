@@ -3,7 +3,7 @@ CREATE TABLE "users"(
     email VARCHAR(512) UNIQUE NOT NULL,
     password VARCHAR(512),
     name VARCHAR(512),
-    avatar VARCHAR(512),
+    avatar VARCHAR(512)
 );
 
 CREATE TABLE "task"(
@@ -15,7 +15,7 @@ CREATE TABLE "task"(
     priority VARCHAR(32) DEFAULT 'LOW', -- 'MEDIUM', 'HIGH'
 
     start_time INT8 DEFAULT NULL,                             -- seconds (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT,
-    end_time INT8 CHECK(end_date >= start_date) DEFAULT NULL, -- seconds (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT + 3600*24*1000),
+    end_time INT8 CHECK(end_time >= start_time) DEFAULT NULL, -- seconds (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT + 3600*24*1000),
 
     created_date INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,  -- seconds
     updated_date INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,  -- seconds
@@ -28,12 +28,12 @@ CREATE TABLE "pomodoro_history"(
     user_id BIGSERIAL NOT NULL,
     start_time INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT, -- seconds
     end_time INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,   -- seconds
-    span INT8 DEFAULT 0,
+    span INT8 DEFAULT 0
 );
 
 CREATE TABLE "pomodoro_setting"(
     id BIGSERIAL NOT NULL UNIQUE PRIMARY KEY,
-    pomodoro_time INT8 
+    pomodoro_time INT8
 );
 
 CREATE TABLE "ai_history"(
@@ -41,13 +41,12 @@ CREATE TABLE "ai_history"(
     user_id BIGSERIAL NOT NULL,
     created_date INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,
     prompt TEXT NOT NULL,
-    answer TEXT NOT NULL,
+    answer TEXT NOT NULL
 );
 
 -- Inserting 3 example tasks
-INSERT INTO task (user_id, name, description, status, priority, estimate_time, created_date, updated_date, is_deleted)
+INSERT INTO task (user_id, name, description, status, priority, created_date, updated_date, is_deleted)
 VALUES
-(1, 'Task 1', 'Description for task 1', 'IN_PROGRESS', 'HIGH', 7200, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, false),
-(2, 'Task 2', 'Description for task 2', 'DONE', 'LOW', 3600, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, false),
-(3, 'Task 3', 'Description for task 3', 'TODO', 'MEDIUM', 5400, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, false);
-
+(1, 'Task 1', 'Description for task 1', 'IN_PROGRESS', 'HIGH', (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, false),
+(2, 'Task 2', 'Description for task 2', 'DONE', 'LOW', (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, false),
+(3, 'Task 3', 'Description for task 3', 'TODO', 'MEDIUM', (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, false);
