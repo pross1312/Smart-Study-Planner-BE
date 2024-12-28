@@ -2,10 +2,14 @@ import { UserModel, User } from '../model/user.model'
 import AppError from '../exception/appError';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import {Validator} from "../utility/validator";
 const jwtExpired = process.env.JWT_EXPIRED || '1h';
 
 class AuthService {
     async register(email: string, password: string): Promise<string> {
+        if (!Validator.isEmail(email)) {
+            throw new AppError("Invalid email", 400);
+        }
         const user: User | null = await UserModel.findOne({ email });
         if (user !== null) {
             throw new AppError("Email already exists", 400);

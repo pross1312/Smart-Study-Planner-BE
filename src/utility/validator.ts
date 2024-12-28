@@ -27,6 +27,11 @@ const Validator = {
 
     isValue(x: any): boolean {
         return x !== null && x !== undefined;
+    },
+
+    isEmail(x: string): boolean {
+        const regex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return regex.test(x);
     }
 };
 export {Validator}
