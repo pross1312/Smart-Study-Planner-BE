@@ -18,7 +18,7 @@ const TaskController = {
             const user_id = ((req as any)?.user as any)?.id!;
             const page = parseInt(req.query.page as string) || 1;
             const size = parseInt(req.query.size as string) || 10;
-            const { startDate, endDate, priority, status, idUser } = req.query;
+            const { startDate, endDate, priority, status, search } = req.query;
             const startDateNum = startDate ? new Date(startDate as string).getTime() : null;
             const endDateNum = endDate ? new Date(endDate as string).getTime()/*milis*/ + 3600*24*1000 : null;
             const { limit, offset } = paginate(page, size);
@@ -29,6 +29,7 @@ const TaskController = {
                 .endDate(endDateNum)
                 .priority(priority as string || null)
                 .status(status as string || null)
+                .search(search as string || null)
                 .build();
             const data = await TaskService.list(user_id, taskReq);
             successHandler(res, data);
@@ -40,8 +41,8 @@ const TaskController = {
     async add(req: Request, res: Response, next: NextFunction) {
         try {
             const user_id = ((req as any)?.user as any)?.id!;
-            const { name, description, status, priority, estimate_time } = req.body;
-            await TaskService.add({ user_id, name, description, status, priority, estimate_time });
+            const { name, description, status, priority, start_time, end_time } = req.body;
+            await TaskService.add({ user_id, name, description, status, priority, start_time, end_time });
             successHandler(res, "Create Task Successful");
         } catch(err) {
             next(err);
@@ -51,11 +52,11 @@ const TaskController = {
     async update(req: Request, res: Response, next: NextFunction) {
         try {
             const user_id = ((req as any)?.user as any)?.id!;
-            const {name, description, status, priority, estimate_time, is_deleted} = req.body;
+            const {name, description, status, priority, start_time, end_time, is_deleted} = req.body;
             const result = await TaskService.update(
                 user_id,
                 req.params.taskId,
-                {name, description, status, priority, estimate_time, is_deleted}
+                {name, description, status, priority, start_time, end_time, is_deleted}
             );
             successHandler(res, result);
         } catch(err) {

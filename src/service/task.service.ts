@@ -26,7 +26,7 @@ const TaskService = {
         return data as { tasks: Task[], total: number };
     },
 
-    async add({user_id, name, description, status, priority, estimate_time}: any): Promise<void> {
+    async add({user_id, name, description, status, priority, start_time, end_time}: any): Promise<void> {
         status = status?.toString()?.toUpperCase();
         priority = priority?.toString()?.toUpperCase();
         if (!Validator.isValue(name)) {
@@ -38,12 +38,12 @@ const TaskService = {
         if (Validator.isValue(priority) && !Validator.isEnum(priority, TaskPriority)) {
             throw new AppError(`Invalid TaskPriority ${priority}, must be one of ${Object.values(TaskPriority)}`, 400);
         }
-        if (Validator.isValue(estimate_time) && !Validator.isNumber(estimate_time, {start: 0})) {
-            throw new AppError(`Invalid estimate_time ${estimate_time}, must be a positive number`, 400);
+        if (Validator.isValue(start_time) && !Validator.isNumber(start_time, end_time,)) {
+            throw new AppError(`Invalid start_time, end_time ${ end_time}, must be a positive number`, 400);
         }
         await TaskModel.save(new Task({
             user_id: user_id,
-            name, status, description, priority, estimate_time
+            name, status, description, priority, start_time, end_time
         }));
     },
 
@@ -60,8 +60,8 @@ const TaskService = {
         if (Validator.isValue(updates.is_deleted) && Validator.parseBoolean(updates.is_deleted) === null) {
             throw new AppError(`Invalid is_deleted, must be a boolean`, 400);
         }
-        if (Validator.isValue(updates.estimate_time) && !Validator.isNumber(updates.estimate_time, {start: 0})) {
-            throw new AppError(`Invalid estimate_time ${updates.estimate_time}, must be a positive number`, 400);
+        if (Validator.isValue(updates.start_time) && !Validator.isNumber(updates.start_time, {start: 0})) {
+            throw new AppError(`Invalid start_time, end_time ${updates.start_time}, must be a positive number`, 400);
         }
         const rowUpdated = await TaskModel.update({user_id: userId, id: Number(taskId)}, updates);
         return rowUpdated;

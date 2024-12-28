@@ -46,7 +46,7 @@ const TodoService = {
             user_id,
             task_id: Number(taskId),
             start_date: startDate!,
-            end_date: startDate! + (task.estimate_time ?? 24*3600)*1000,
+            end_date: task.end_time ?? 0,
         });
         await TodoModel.save(todo);
         const now = new Date().getTime();

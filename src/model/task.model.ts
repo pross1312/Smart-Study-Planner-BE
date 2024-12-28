@@ -19,16 +19,18 @@ class Task {
     description: string | null;
     status: TaskStatus | null;
     priority: TaskPriority | null;
-    estimate_time: number | null;
+    start_time: number | null;
+    end_time: number | null;
     is_deleted: boolean | null;
 
-    constructor({user_id, name, description, status, priority, estimate_time, is_deleted}: {
+    constructor({user_id, name, description, status, priority, start_time, end_time, is_deleted}: {
         user_id: number;
         name: string;
         description?: string | null;
         status?: TaskStatus | null;
         priority?: TaskPriority | null;
-        estimate_time?: number | null;
+        start_time?: number | null;
+        end_time?: number | null;
         is_deleted?: boolean | null;
     }) {
         this.user_id = user_id;
@@ -36,7 +38,8 @@ class Task {
         this.description = description || "";
         this.status = status || TaskStatus.Todo;
         this.priority = priority || TaskPriority.Low;
-        this.estimate_time = estimate_time || 3600;
+        this.start_time = start_time || null;
+        this.end_time = end_time || null;
         this.is_deleted = (is_deleted === undefined || is_deleted === null) ? false : is_deleted;
     }
 }
@@ -48,7 +51,7 @@ interface TaskFilter {
     description?: string,
     status?: TaskStatus,
     priority?: TaskPriority,
-    estimate_time?: number,
+    start_time?: number,
     is_deleted?: boolean,
 }
 interface TaskUpdate {
@@ -56,7 +59,8 @@ interface TaskUpdate {
     description?: string,
     status?: TaskStatus,
     priority?: TaskPriority,
-    estimate_time?: number,
+    start_time?: number,
+    end_time?: number,
     is_deleted?: boolean,
 }
 const TaskModel = {
@@ -108,7 +112,7 @@ const TaskModel = {
 
     async getListTask(user_id: number, taskReq: TaskReq) {
         debugLog("GetListTask: Task request:", taskReq);
-        const { startDate, endDate, priority, status, limit, offset } = taskReq;
+        const { startDate, endDate, priority, status, limit, offset, search } = taskReq;
 
         let args = [];
         let query = `SELECT * FROM task WHERE user_id = $1 AND is_deleted = false`;
@@ -133,6 +137,12 @@ const TaskModel = {
         if (status) {
             query += ` AND status = $${count++}`;
             args.push(status);
+        }
+
+        if (search) {
+            console.log(search)
+            query += ` AND name ilike $${count++}`;
+            args.push( "%" + search.trim() + "%");
         }
 
         query += ` ORDER BY updated_date desc LIMIT $${count++} OFFSET $${count++}`;
