@@ -72,6 +72,24 @@ const TaskController = {
         } catch(err) {
             next(err);
         }
+    },
+
+    async report(req: Request, res: Response, next: NextFunction) {
+        try {
+            const startDate = Number(req.query.startDate);
+            const endDate = Number(req.query.endDate);
+            successHandler(res, await TaskService.report(startDate, endDate));
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async analytic(req: Request, res: Response, next: NextFunction) {
+        try {
+            successHandler(res, await TaskService.analytic());
+        } catch (err) {
+            next(err);
+        }
     }
 };
 export {TaskController};

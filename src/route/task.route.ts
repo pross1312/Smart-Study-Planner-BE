@@ -8,5 +8,7 @@ router.get("/", TaskController.list);
 router.post("/", TaskController.add);
 router.delete("/:taskId", TaskController.delete);
 router.put("/:taskId", TaskController.update);
+router.get("/report", TaskController.report)
+router.get("/analytic", TaskController.analytic)
 
 export default router;

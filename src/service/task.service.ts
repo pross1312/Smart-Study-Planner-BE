@@ -73,6 +73,20 @@ const TaskService = {
         }
         const rowDeleted = await TaskModel.delete({user_id: userId, id: Number(taskId)});
         return rowDeleted;
+    },
+
+    async report(startDay: number, endDate: number) {
+        if (!startDay || !endDate) {
+            throw new AppError(`startday or enday is not valid`, 400);
+        }
+        if (startDay > endDate) {
+            throw new AppError(`startday greater than enday`, 400);
+        }
+        return await TaskModel.report(startDay, endDate);
+    },
+
+    async analytic() {
+        return await TaskModel.analytic();
     }
 };
 

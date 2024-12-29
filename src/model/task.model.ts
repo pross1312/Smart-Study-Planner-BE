@@ -223,7 +223,42 @@ const TaskModel = {
         const result = await repo.exec("result", query, args);
         console.log("Delete result: ", result);
         return result.rowCount;
-    }
+    },
+
+    async report(startDay: number, endDate: number) {
+        let args_count = 1;
+        let args = [];
+        let query = `
+        SELECT
+            series.day,
+            COUNT(task.id) AS record_count
+        FROM
+            generate_series(
+                to_timestamp($${args_count++}), 
+                to_timestamp($${args_count++}), 
+                '1 day'::interval
+            ) AS series(day)
+        LEFT JOIN task ON to_timestamp(task.created_date)::date = series.day::date
+        GROUP BY series.day
+        ORDER BY series.day;
+        `
+        args.push(startDay, endDate);
+        const result = await repo.exec("many", query, args)
+        return result;
+    },
+
+    async analytic() {
+        let query = `
+        SELECT
+            task.status, COUNT(task.id) as quantity
+        FROM
+            task
+        GROUP BY task.status
+        `
+        const result = await repo.exec("any", query)
+        return result;
+    },
+    
 };
 
 export {TaskModel, Task, TaskStatus, TaskPriority, TaskUpdate, TaskFilter};
