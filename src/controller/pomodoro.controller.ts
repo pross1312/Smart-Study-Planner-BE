@@ -31,7 +31,7 @@ const PomodoroController = {
     async addHistory(req: Request, res: Response, next: NextFunction) {
         try {
             const user_id = ((req as any)?.user as any)?.id!;
-            const {startTime, endTime, span} = req.query;
+            const {startTime, endTime, span} = req.body;
             const data = await PomodoroService.addHistory({
                 userId: user_id,
                 startTime: Date.parse(startTime?.toString()!)/1000,
@@ -44,8 +44,27 @@ const PomodoroController = {
         }
     },
 
+    async updateSetting(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user_id = ((req as any)?.user as any)?.id!;
+            const {pomodoroTime, breakTime, longBreakTime} = req.body;
+            await PomodoroService.updateSetting({
+                user_id,
+                pomodoro_time: pomodoroTime,
+                break_time: breakTime,
+                long_break_time: longBreakTime,
+            });
+            successHandler(res, "Successfully updated setting");
+        } catch(err) {
+            next(err);
+        }
+    },
+
     async getSetting(req: Request, res: Response, next: NextFunction) {
         try {
+            const user_id = ((req as any)?.user as any)?.id!;
+            const setting = await PomodoroService.getSetting(user_id);
+            successHandler(res, setting);
         } catch(err) {
             next(err);
         }

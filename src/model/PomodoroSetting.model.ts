@@ -33,7 +33,7 @@ interface PomodoroSettingUpdate {
     long_break_time?: number;
 }
 const table_name = "pomodoro_setting";
-class _PomodoroSettingModel extends Model<PomodoroSetting, PomodoroSettingFilter, PomodoroSetting> {
+class _PomodoroSettingModel extends Model<PomodoroSetting, PomodoroSettingFilter, PomodoroSettingUpdate> {
     constructor() {
         super(table_name);
     }
