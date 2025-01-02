@@ -76,6 +76,24 @@ const UserModel = {
         debugLog(query, args);
         const user: User | null = await repo.exec("oneOrNone", query, args);
         return user;
+    },
+
+    update: async (id: number, updatedFields: Partial<User>) => {
+        const fields: Array<string> = Object.getOwnPropertyNames(updatedFields)
+                                            .filter(prop => updatedFields[prop as keyof User] !== undefined &&
+                                                            updatedFields[prop as keyof User] !== null);
+        if (fields.length === 0) {
+            throw new Error("No fields to update");
+        }
+
+        const setClause: string = fields.map((field, index) => `${field} = $${index+1}`).join(", ");
+        const args: Array<string> = Array.from(fields, (field) => updatedFields[field as keyof User]!.toString());
+
+        args.push(id.toString());
+
+        const query: string = `UPDATE "users" SET ${setClause} WHERE id = $${fields.length + 1}`;
+        debugLog(query, args);
+        await repo.exec("none", query, args);
     }
 };
 
