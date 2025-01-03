@@ -127,12 +127,12 @@ const TaskModel = {
         args.push(user_id);
 
         if (startDate) {
-            query += ` AND created_date >= $${count++}`;
+            query += ` AND start_time >= $${count++}`;
             args.push(startDate);
         }
 
         if (endDate) {
-            query += ` AND created_date <= $${count++}`;
+            query += ` AND end_time <= $${count++}`;
             args.push(endDate);
         }
 
