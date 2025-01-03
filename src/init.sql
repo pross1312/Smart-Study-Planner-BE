@@ -47,8 +47,8 @@ CREATE TABLE "ai_history"(
     id BIGSERIAL NOT NULL UNIQUE PRIMARY KEY,
     user_id BIGSERIAL NOT NULL,
     created_date INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,
-    prompt TEXT NOT NULL,
-    answer TEXT NOT NULL
+    role VARCHAR(32) NOT NULL CHECK (role in ("user", "model")),
+    content TEXT NOT NULL,
 );
 
 CREATE FUNCTION leaderboard(page integer, page_size integer)
