@@ -1,4 +1,3 @@
--- NOTE: use milliseconds because nodejs getTime() return milliseconds
 CREATE TABLE "users"(
     id bigserial NOT NULL UNIQUE PRIMARY KEY,
     email VARCHAR(512) UNIQUE NOT NULL,
@@ -19,11 +18,11 @@ CREATE TABLE "task"(
     ) DEFAULT 'TODO', -- 'IN_PROGRESS', 'DONE', 'EXPIRED'
     priority VARCHAR(32) DEFAULT 'LOW', -- 'MEDIUM', 'HIGH'
 
-    start_time INT8 DEFAULT NULL,                             -- seconds (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT,
-    end_time INT8 CHECK(end_time >= start_time) DEFAULT NULL, -- seconds (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT + 3600*24*1000),
+    start_time INT8 DEFAULT NULL,                             -- seconds (EXTRACT(EPOCH FROM now()))::BIGINT,
+    end_time INT8 CHECK(end_time >= start_time) DEFAULT NULL, -- seconds (EXTRACT(EPOCH FROM now()))::BIGINT + 3600*24*1000),
 
-    created_date INT8 DEFAULT (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT,  -- milliseconds
-    updated_date INT8 DEFAULT (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT,  -- milliseconds
+    created_date INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,  -- seconds
+    updated_date INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,  -- seconds
     is_deleted BOOLEAN DEFAULT FALSE
 );
 
@@ -31,8 +30,8 @@ CREATE TABLE "task"(
 CREATE TABLE "pomodoro_history"(
     id BIGSERIAL NOT NULL UNIQUE PRIMARY KEY,
     user_id BIGSERIAL NOT NULL,
-    start_time INT8 DEFAULT (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, -- milliseconds
-    end_time INT8 DEFAULT (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT,   -- milliseconds
+    start_time INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT, -- seconds
+    end_time INT8 DEFAULT (EXTRACT(EPOCH FROM now()))::BIGINT,   -- seconds
     span INT8 DEFAULT 0
 );
 
@@ -78,9 +77,9 @@ LANGUAGE SQL;
 -- Inserting 3 example tasks
 -- INSERT INTO task (user_id, name, description, status, priority, created_date, updated_date, is_deleted)
 -- VALUES
--- (1, 'Task 1', 'Description for task 1', 'IN_PROGRESS', 'HIGH', (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, false),
--- (2, 'Task 2', 'Description for task 2', 'DONE', 'LOW', (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, false),
--- (3, 'Task 3', 'Description for task 3', 'TODO', 'MEDIUM', (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, false);
+-- (1, 'Task 1', 'Description for task 1', 'IN_PROGRESS', 'HIGH', (EXTRACT(EPOCH FROM now()))::BIGINT, (EXTRACT(EPOCH FROM now()))::BIGINT, false),
+-- (2, 'Task 2', 'Description for task 2', 'DONE', 'LOW', (EXTRACT(EPOCH FROM now()))::BIGINT, (EXTRACT(EPOCH FROM now()))::BIGINT, false),
+-- (3, 'Task 3', 'Description for task 3', 'TODO', 'MEDIUM', (EXTRACT(EPOCH FROM now()))::BIGINT, (EXTRACT(EPOCH FROM now()))::BIGINT, false);
 
 -- Insert dummy data into the "pomodoro_history" table
 INSERT INTO public.users (email,"password","name",avatar) VALUES
@@ -91,9 +90,9 @@ INSERT INTO public.users (email,"password","name",avatar) VALUES
 	 ('tuong12323@gmail.com','$2b$10$6ia5kWWFDlGGXWntA5TiWOMlN9FO/0Xbf.QkwySZEoW2EXprTTzSi',NULL,NULL);
 INSERT INTO "pomodoro_history" (user_id, start_time, end_time, span)
 VALUES
-    (1, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 08:00:00') * 1000)::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 08:25:00') * 1000)::BIGINT, 1500),
-    (2, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 09:00:00') * 1000)::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 09:25:00') * 1000)::BIGINT, 1500),
-    (1, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 10:00:00') * 1000)::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 10:25:00') * 1000)::BIGINT, 1500),
-    (3, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 11:00:00') * 1000)::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 11:25:00') * 1000)::BIGINT, 1500),
-    (2, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 13:00:00') * 1000)::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 13:25:00') * 1000)::BIGINT, 1500),
-    (3, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 14:00:00') * 1000)::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 14:25:00') * 1000)::BIGINT, 1500);
+    (1, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 08:00:00'))::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 08:25:00'))::BIGINT, 1500),
+    (2, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 09:00:00'))::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 09:25:00'))::BIGINT, 1500),
+    (1, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 10:00:00'))::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 10:25:00'))::BIGINT, 1500),
+    (3, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 11:00:00'))::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 11:25:00'))::BIGINT, 1500),
+    (2, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 13:00:00'))::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 13:25:00'))::BIGINT, 1500),
+    (3, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 14:00:00'))::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 14:25:00'))::BIGINT, 1500);

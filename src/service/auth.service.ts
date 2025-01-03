@@ -12,6 +12,8 @@ const otpLength = 6;
 const otpExpireTime = 10 // minutes
 const otpCleanUpTime = 30; // minutes
 
+const requireEmailVerification = false;
+
 const registeringEmails: {[key: string]: {password: string, otp: string, expired: boolean, timeOut: NodeJS.Timeout}} = {
 };
 
@@ -47,7 +49,12 @@ class AuthService {
                 }
             }, otpExpireTime * 60 * 1000)
         };
-        await this.sendOtp(email, otp);
+
+        if (requireEmailVerification) {
+            await this.sendOtp(email, otp);
+        } else {
+            await this.verifyEmail(email, otp);
+        }
     }
 
     async verifyEmail(email: any, _otp: any) {

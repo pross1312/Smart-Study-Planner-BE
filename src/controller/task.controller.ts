@@ -4,6 +4,7 @@ import { Builder } from 'builder-pattern';
 import {Task} from "../model/task.model";
 import {User} from "../model/user.model";
 import {TaskService} from "../service/task.service";
+import {debugLog, setDebug} from "../log/logger";
 import successHandler from '../utility/ResponseSuccess';
 
 const paginate = (page: number, size: number) => {
@@ -52,8 +53,6 @@ const TaskController = {
         try {
             const user_id = ((req as any)?.user as any)?.id!;
             let { name, description, status, priority, start_time, end_time } = req.body;
-            start_time = start_time == undefined ? undefined : Date.parse(start_time?.toString()!);
-            end_time = end_time == undefined ? undefined : Date.parse(end_time?.toString()!);
             await TaskService.add({ user_id, name, description, status, priority, start_time, end_time });
             successHandler(res, "Create Task Successful");
         } catch(err) {
@@ -65,8 +64,6 @@ const TaskController = {
         try {
             const user_id = ((req as any)?.user as any)?.id!;
             let {name, description, status, priority, start_time, end_time, is_deleted} = req.body;
-            start_time = start_time == undefined ? undefined : Date.parse(start_time?.toString()!);
-            end_time = end_time == undefined ? undefined : Date.parse(end_time?.toString()!);
             const result = await TaskService.update(
                 user_id,
                 req.params.taskId,

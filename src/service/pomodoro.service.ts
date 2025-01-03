@@ -5,13 +5,7 @@ import AppError from '../exception/appError';
 import {PomodoroHistoryReq} from "../exchange/req/pomodoro.req";
 
 const PomodoroService = {
-    async listHistory({userId, limit, offset, startTime, endTime}: {
-        userId: number,
-        limit: number,
-        offset: number,
-        startTime: number | undefined,
-        endTime: number | undefined
-    }) {
+    async listHistory({userId, limit, offset, startTime, endTime}: any) {
         if (!Validator.isNumber(userId, {start: 0})) throw new Error("Invalid userId from controller");
         if (!Validator.isNumber(limit, {start: 0}))  throw new Error("Invalid limit from controller");
         if (!Validator.isNumber(offset, {start: 0}))  throw new Error("Invalid offset from controller");
@@ -33,12 +27,7 @@ const PomodoroService = {
         return result;
     },
 
-    async addHistory({userId, startTime, endTime, span}: {
-        userId: number,
-        startTime: number,
-        endTime: number,
-        span: number,
-    }) {
+    async addHistory({userId, startTime, endTime, span}: any) {
         if (!Validator.isNumber(userId, {start: 0})) throw new Error("Invalid userId from controller");
         if (!Validator.isNumber(startTime, {start: 0})) throw new AppError("Invalid startTime", 400);
         if (!Validator.isNumber(endTime, {start: 0})) throw new AppError("Invalid endTime", 400);
