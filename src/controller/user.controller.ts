@@ -20,6 +20,16 @@ const UserController = {
             next(error);
         }
     },
+
+    async getLeaderboard(req: Request, res: Response, next: NextFunction) {
+        try {
+            const {page, page_size} = req.query;
+            const result = await UserService.getLeaderboard(page, page_size);
+            successHandler(res, result);
+        } catch(error) {
+            next(error);
+        }
+    }
 };
 
 export {UserController};

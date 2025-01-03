@@ -52,6 +52,29 @@ CREATE TABLE "ai_history"(
     answer TEXT NOT NULL
 );
 
+CREATE FUNCTION leaderboard(page integer, page_size integer)
+RETURNS TABLE(email varchar(512), name varchar(512), avatar varchar(512), time_span integer)
+AS $$
+SELECT
+	users.email AS email,
+	users.name AS name,
+	users.avatar AS avatar,
+	SUM(COALESCE(h.span, 0)) AS time_span
+FROM
+	users
+LEFT JOIN pomodoro_history h ON
+    users.id = h.user_id
+GROUP BY
+	users.id
+ORDER BY
+	time_span DESC, users.id ASC
+LIMIT
+	page_size
+OFFSET
+	page
+$$
+LANGUAGE SQL;
+
 -- Inserting 3 example tasks
 -- INSERT INTO task (user_id, name, description, status, priority, created_date, updated_date, is_deleted)
 -- VALUES
@@ -60,6 +83,12 @@ CREATE TABLE "ai_history"(
 -- (3, 'Task 3', 'Description for task 3', 'TODO', 'MEDIUM', (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, (EXTRACT(EPOCH FROM now()) * 1000)::BIGINT, false);
 
 -- Insert dummy data into the "pomodoro_history" table
+INSERT INTO public.users (email,"password","name",avatar) VALUES
+	 ('dangvinhtuong12@gmail.com','$2b$10$LUocZYJXdLhzXMmdpPB9Te0COG1MrLPLf.5jdCmzGrjhTWMG9ye8u',NULL,NULL),
+	 ('tuong@gmail.com','$2b$10$Vp/EzF4n7tg9tC1gsGhWweT1zOQ3FFPA.Y1jcQTv.yyBDmfex68Ry',NULL,NULL),
+	 ('tuong12@gmail.com','$2b$10$6aHGMOG3oJvrDtKeHh93BOniUi32vYfIqJNS7W8EknX0loY4eyEEy',NULL,NULL),
+	 ('tuong123@gmail.com','$2b$10$KXqWdfPTENQYWvGbfYWgkOrAq2E6obvvSxdkvIrKNrCusnOlcfytq',NULL,NULL),
+	 ('tuong12323@gmail.com','$2b$10$6ia5kWWFDlGGXWntA5TiWOMlN9FO/0Xbf.QkwySZEoW2EXprTTzSi',NULL,NULL);
 INSERT INTO "pomodoro_history" (user_id, start_time, end_time, span)
 VALUES
     (1, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 08:00:00') * 1000)::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 08:25:00') * 1000)::BIGINT, 1500),

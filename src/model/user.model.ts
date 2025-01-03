@@ -20,6 +20,14 @@ class User {
         this.avatar = avatar;
     }
 }
+
+export interface LeaderboardEntry {
+    email: string,
+    name: string,
+    time_span: number, // minutes
+    avatar: string
+}
+
 const UserModel = {
     save: async (user: User) => {
         const fields: Array<string> = Object.getOwnPropertyNames(user)
@@ -94,6 +102,13 @@ const UserModel = {
         const query: string = `UPDATE "users" SET ${setClause} WHERE id = $${fields.length + 1}`;
         debugLog(query, args);
         await repo.exec("none", query, args);
+    },
+
+    // page is 1-base index
+    getLeaderboard: async (page: number, page_size: number): Promise<Array<LeaderboardEntry>> => {
+        const query = "SELECT * from leaderboard($1, $2)";
+        const args = [page-1, page_size]; // function leaderboard use 0-base index
+        return await repo.exec("many", query, args) || [];
     }
 };
 

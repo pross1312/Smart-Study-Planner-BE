@@ -1,6 +1,7 @@
 import cloudinary from '../config/cloudinary';
 import AppError from '../exception/appError';
 import {User, UserModel} from "../model/user.model";
+import {Validator} from "../utility/validator";
 
 const UserService = {
   async get(id: number) {
@@ -39,6 +40,15 @@ const UserService = {
       data: "Update profile successful",
       updatedUser
     };
+  },
+
+  // page is 1-base index
+  async getLeaderboard(page: any, page_size: any) {
+    if (!Validator.isNumber(page, {start: 1})) page = 1;
+    if (!Validator.isNumber(page_size, {start: 1})) page_size = 10;
+
+    const result = await UserModel.getLeaderboard(page, page_size);
+    return result;
   }
 };
 
