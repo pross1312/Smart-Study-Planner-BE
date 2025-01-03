@@ -38,8 +38,8 @@ class Task {
         this.description = description || "";
         this.status = status || TaskStatus.Todo;
         this.priority = priority || TaskPriority.Low;
-        this.start_time = start_time || null;
-        this.end_time = end_time || null;
+        this.start_time = start_time  === undefined ? null : start_time;
+        this.end_time = end_time  === undefined ? null : end_time;
         this.is_deleted = (is_deleted === undefined || is_deleted === null) ? false : is_deleted;
     }
 }
@@ -52,6 +52,7 @@ interface TaskFilter {
     status?: TaskStatus,
     priority?: TaskPriority,
     start_time?: number,
+    end_time?: number,
     is_deleted?: boolean,
 }
 interface TaskUpdate {
@@ -108,6 +109,12 @@ const TaskModel = {
         debugLog(query, args);
         const Task: Task | null = await repo.exec("oneOrNone", query, args);
         return Task;
+    },
+
+    async getUnassignedTasks(user_id: number) {
+        const query = `SELECT * FROM "${table_name}" WHERE user_id = $1 AND start_time IS NULL AND end_time IS NULL`;
+        debugLog(query, user_id);
+        return await repo.exec("many", query, [user_id]) || [];
     },
 
     async getListTask(user_id: number, taskReq: TaskReq) {

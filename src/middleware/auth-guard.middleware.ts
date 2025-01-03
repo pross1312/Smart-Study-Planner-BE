@@ -21,7 +21,7 @@ const AuthGuard = (req: Request, res: Response, next: NextFunction) => {
                 } else {
                     UserModel.findOne({id: (decoded as any).userId!}).then((user: User | null) => {
                         if (user === null) {
-                            next(new AppError("User not found", 400));
+                            next(new AppError("Invalid jwt token", 400));
                         } else {
                             debugLog("Authorization user: ", user);
                             (req as any).user = user;

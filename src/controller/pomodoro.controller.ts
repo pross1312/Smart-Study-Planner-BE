@@ -19,8 +19,8 @@ const PomodoroController = {
             const data = await PomodoroService.listHistory({
                 userId: user_id,
                 limit, offset,
-                startTime: startTime == undefined ? undefined : Date.parse(startTime?.toString()!)/1000,
-                endTime: endTime == undefined ? undefined : Date.parse(endTime?.toString()!)/1000,
+                startTime: startTime == undefined ? undefined : Date.parse(startTime?.toString()!),
+                endTime: endTime == undefined ? undefined : Date.parse(endTime?.toString()!),
             });
             successHandler(res, data);
         } catch(err) {

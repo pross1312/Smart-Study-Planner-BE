@@ -38,10 +38,22 @@ const TaskController = {
         }
     },
 
+    async listUnassigned(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user_id = ((req as any)?.user as any)?.id!;
+            const data = await TaskService.listUnassigned(user_id);
+            successHandler(res, data);
+        } catch (err) {
+            next(err);
+        }
+    },
+
     async add(req: Request, res: Response, next: NextFunction) {
         try {
             const user_id = ((req as any)?.user as any)?.id!;
-            const { name, description, status, priority, start_time, end_time } = req.body;
+            let { name, description, status, priority, start_time, end_time } = req.body;
+            start_time = start_time == undefined ? undefined : Date.parse(start_time?.toString()!);
+            end_time = end_time == undefined ? undefined : Date.parse(end_time?.toString()!);
             await TaskService.add({ user_id, name, description, status, priority, start_time, end_time });
             successHandler(res, "Create Task Successful");
         } catch(err) {
@@ -52,7 +64,9 @@ const TaskController = {
     async update(req: Request, res: Response, next: NextFunction) {
         try {
             const user_id = ((req as any)?.user as any)?.id!;
-            const {name, description, status, priority, start_time, end_time, is_deleted} = req.body;
+            let {name, description, status, priority, start_time, end_time, is_deleted} = req.body;
+            start_time = start_time == undefined ? undefined : Date.parse(start_time?.toString()!);
+            end_time = end_time == undefined ? undefined : Date.parse(end_time?.toString()!);
             const result = await TaskService.update(
                 user_id,
                 req.params.taskId,

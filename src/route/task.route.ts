@@ -5,6 +5,7 @@ import {TaskController} from "../controller/task.controller";
 const router: Router = Router();
 
 router.get("/", TaskController.list);
+router.get("/unassigned", TaskController.listUnassigned);
 router.post("/", TaskController.add);
 router.delete("/:taskId", TaskController.delete);
 router.put("/:taskId", TaskController.update);
