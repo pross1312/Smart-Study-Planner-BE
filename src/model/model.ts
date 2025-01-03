@@ -23,7 +23,7 @@ class Model<ModelType, FilterInterface, UpdateInterface> {
         const fields: Array<string> = Object.getOwnPropertyNames(info)
                                             .filter(prop => info[prop as keyof typeof info] !== undefined);
         const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(" AND ");
-        const args: Array<string> = Array.from(fields, (field) => info[field as keyof typeof info]!.toString());
+        const args: Array<any> = Array.from(fields, (field) => info[field as keyof typeof info]);
         let query: string;
         if (fields.length > 0) {
             query = `SELECT * FROM "${this.table_name}" WHERE ${condition}`;
@@ -39,7 +39,7 @@ class Model<ModelType, FilterInterface, UpdateInterface> {
         const fields: Array<string> = Object.getOwnPropertyNames(info)
                                             .filter(prop => info[prop as keyof typeof info] !== undefined);
         const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(" AND ");
-        const args: Array<string> = Array.from(fields, (field) => info[field as keyof typeof info]!.toString());
+        const args: Array<any> = Array.from(fields, (field) => info[field as keyof typeof info]);
 
         let query: string;
         if (fields.length > 0) {
@@ -60,12 +60,12 @@ class Model<ModelType, FilterInterface, UpdateInterface> {
         }
         let args_count = 1;
         const update_statement: string = update_fields.map((field, index) => `${field} = $${args_count++}`).join(", ");
-        let args: Array<string> = Array.from(update_fields, (field) => update[field as keyof typeof update]!.toString());
+        let args: Array<any> = Array.from(update_fields, (field) => update[field as keyof typeof update]);
 
         const filter_fields: Array<string> = Object.getOwnPropertyNames(filter)
                                             .filter(prop => filter[prop as keyof typeof filter] !== undefined);
         const filter_condition: string = filter_fields.map((field, index) => `${field} = $${args_count++}`).join(" AND ");
-        args = args.concat(Array.from(filter_fields, (field) => filter[field as keyof typeof filter]!.toString()));
+        args = args.concat(Array.from(filter_fields, (field) => filter[field as keyof typeof filter]));
 
         let query = `UPDATE "${this.table_name}" SET ${update_statement}`;
         if (filter_fields.length > 0) {
@@ -84,7 +84,7 @@ class Model<ModelType, FilterInterface, UpdateInterface> {
             throw new Error("Attempt to delete without any condition");
         }
         const condition: string = fields.map((field, index) => `${field} = $${index+1}`).join(" AND ");
-        const args: Array<string> = Array.from(fields, (field) => filter[field as keyof typeof filter]!.toString());
+        const args: Array<any> = Array.from(fields, (field) => filter[field as keyof typeof filter]);
         let query = `DELETE FROM ${this.table_name} WHERE ${condition}`;
         debugLog(query, args);
 

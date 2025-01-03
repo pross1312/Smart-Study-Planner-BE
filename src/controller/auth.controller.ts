@@ -8,10 +8,20 @@ import successHandler from '../utility/ResponseSuccess';
 class authController {
     async register(req: Request, res: Response, next: NextFunction) {
         try {
-            const response = await authService.register(req.body.email, req.body.password);
-            successHandler(res, response);
+            await authService.register(req.body.email, req.body.password);
+            successHandler(res, "Ok");
         } catch (error) {
             next(error); 
+        }
+    }
+
+    async verifyEmail(req: Request, res: Response, next: NextFunction) {
+        try {
+            const {email, otp} = req.body;
+            await authService.verifyEmail(email, otp);
+            successHandler(res,  'User registered successfully');
+        } catch (error) {
+            next(error);
         }
     }
 
