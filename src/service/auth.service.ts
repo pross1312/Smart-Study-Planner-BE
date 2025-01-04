@@ -1,10 +1,13 @@
 import { UserModel, User } from '../model/user.model'
 import AppError from '../exception/appError';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, {VerifyCallback, TokenExpiredError} from 'jsonwebtoken';
 import {Validator} from "../utility/validator";
 import {Mailer, SendMailResult} from "../utility/mailer";
 import {debugLog} from "../log/logger";
+import otpEmail from "../html/otp-email.html";
+import resetPasswordEmail from "../html/reset-password-email.html";
+import resetPasswordPage from "../html/reset-password.html";
 
 const jwtExpired = process.env.JWT_EXPIRED || '1h';
 
@@ -12,10 +15,19 @@ const otpLength = 6;
 const otpExpireTime = 10 // minutes
 const otpCleanUpTime = 30; // minutes
 
-const requireEmailVerification = false;
+const resetPasswordLink = "http://localhost:3000/auth/password/reset-page";
+const resetPasswordJwtSecret = process.env.RESET_PASSWORD_JWT_SECRET || "UN";
+const resetPasswordExpireTime = process.env.RESET_PASSWORD_EXPIRE_TIME || "15m";
+
+const requireEmailVerification = true;
 
 const registeringEmails: {[key: string]: {password: string, otp: string, expired: boolean, timeOut: NodeJS.Timeout}} = {
 };
+
+interface ResetPasswordTokenPayload {
+    email: string,
+    createdTime: number,
+}
 
 class AuthService {
     async register(email: string, password: string) {
@@ -112,102 +124,77 @@ class AuthService {
         return Array.from({ length: otpLength }, (_, i) => getRandomInt(0, 9)).join("");
     }
 
+    private replaceAll(str: string, mapObj: {[key: string]: string}): string {
+        const escapeRegExp = (str: string) => {
+            return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+        };
+        var re = new RegExp(Object.keys(mapObj).map(x => escapeRegExp(x)).join("|"),"gi");
+        return str.replace(re, function(matched){
+            return mapObj[matched];
+        });
+    }
+
     private async sendOtp(email: string, otp: string) {
-        const result = await Mailer.send(email, "Verify your email for SmartStudyPlanner", `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OTP Verification</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f7fc;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            text-align: center;
-            padding-bottom: 20px;
-        }
-        .header h1 {
-            font-size: 28px;
-            color: #007bff;
-        }
-        .otp {
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            color: #333;
-            margin: 20px 0;
-        }
-        .content {
-            font-size: 16px;
-            color: #555;
-            line-height: 1.6;
-        }
-        .footer {
-            text-align: center;
-            font-size: 14px;
-            color: #888;
-            padding-top: 20px;
-        }
-        .button {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            margin: 20px 0;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
+        const html = this.replaceAll(otpEmail, {
+            "${OTP}": otp,
+            "${OTP_EXPIRE_TIME}": otpExpireTime.toString(),
+        });
+        const result = await Mailer.send(email, "Verify your email for SmartStudyPlanner", html);
+    }
 
-    <div class="container">
-        <div class="header">
-            <h1>OTP Verification</h1>
-        </div>
+    async sendResetPasswordEmail(email: any) {
+        if (!Validator.isEmail(email)) throw new AppError("Invalid email", 400);
+        const payload: ResetPasswordTokenPayload = { email, createdTime: new Date().getTime() };
+        const options = { expiresIn: resetPasswordExpireTime };
+        const token = jwt.sign(payload, resetPasswordJwtSecret, options);
+        const resetPasswordUri = encodeURI(`${resetPasswordLink}?token=${token}`);
+        const html = this.replaceAll(resetPasswordEmail, {
+            "${RESET_PASSWORD_URI}": resetPasswordUri,
+            "${RESET_PASSWORD_EXPIRE_TIME}": resetPasswordExpireTime
+        });
+        const result = await Mailer.send(email, "Reset your password for SmartStudyPlanner", html);
+    }
 
-        <div class="content">
-            <p>Dear User,</p>
-            <p>We received a request register you account on SmartStudyPlanner. Please use the OTP below to complete your verification process:</p>
+    async getResetPasswordPage(token: any): Promise<string> {
+        if (!Validator.isValue(token)) throw new AppError("Missing reset password token", 400);
+        return new Promise((resolve, reject) => {
+            jwt.verify(token, resetPasswordJwtSecret, (async (err, decoded) => {
+                if (err) {
+                    console.log(err);
+                    if (err instanceof TokenExpiredError) {
+                        reject(new AppError("Token expired", 400));
+                    } else {
+                        reject(new AppError("Invalid reset password token", 400));
+                    }
+                } else {
+                    const {email, createdTime} = decoded as ResetPasswordTokenPayload;
+                    const html = this.replaceAll(resetPasswordPage, {"${TOKEN}": token});
+                    resolve(html);
+                }
+            }) as VerifyCallback);
+        });
+    }
 
-            <div class="otp">
-                ${otp}
-            </div>
-
-            <p>This OTP is valid for the next ${otpExpireTime} minutes. If you did not request this verification, please ignore this email.</p>
-
-            <p>Best regards,</p>
-            <p>The SmartStudyPlanner Team</p>
-        </div>
-
-        <div class="footer">
-            <p>If you have any questions, feel free to contact us at <a href="mailto:helloeverybody648@gmail.com">smartstudyplanner25@gmail.com</a>.</p>
-        </div>
-    </div>
-
-</body>
-</html>
-`);
+    async resetPassword(token: any, password: string) {
+        if (!Validator.isValue(token)) throw new AppError("Missing reset password token", 400);
+        if (!Validator.isValue(password)) throw new AppError("Missing password token", 400);
+        return new Promise<void>((resolve, reject) => {
+            jwt.verify(token, resetPasswordJwtSecret, (async (err, decoded) => {
+                if (err) {
+                    console.log(err);
+                    if (err instanceof TokenExpiredError) {
+                        reject(new AppError("Token expired", 400));
+                    } else {
+                        reject(new AppError("Invalid reset password token", 400));
+                    }
+                } else {
+                    const {email, createdTime} = decoded as ResetPasswordTokenPayload;
+                    const hashedPassword = bcrypt.hashSync(password, 10);
+                    await UserModel.update({email}, {password: hashedPassword});
+                    resolve();
+                }
+            }) as VerifyCallback);
+        });
     }
 }
 

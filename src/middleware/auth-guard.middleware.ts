@@ -10,7 +10,7 @@ const AuthGuard = (req: Request, res: Response, next: NextFunction) => {
     if (!authorization) {
         throw new AppError("Unauthorized user is forbidden here.", 401);
     } else if  (authorization.startsWith("Bearer")) {
-        const token = authorization.split(' ', 2)[1];
+        const token = authorization.split(' ', 2)[1];  
         jwt.verify(token, process.env.JWT_SECRET || "UN", (err, decoded) => {
             if (err) {
                 console.log(err);

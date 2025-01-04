@@ -20,5 +20,9 @@ router.post("/register", authController.register);
 
 router.post("/register/verify", authController.verifyEmail);
 
+router.get("/password/reset/:email", authController.sendResetPasswordEmail);
+router.get("/password/reset-page", authController.sendResetPasswordPage);
+router.post("/password/reset", authController.resetPassword);
+
 export default router;
 
