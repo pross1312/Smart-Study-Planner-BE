@@ -20,8 +20,8 @@ const TaskController = {
             const page = parseInt(req.query.page as string) || 1;
             const size = parseInt(req.query.size as string) || 10;
             const { startDate, endDate, priority, status, search } = req.query;
-            const startDateNum = startDate ? new Date(startDate as string).getTime() : null;
-            const endDateNum = endDate ? new Date(endDate as string).getTime()/*milis*/ + 3600*24*1000 : null;
+            const startDateNum = startDate ? new Date(startDate as string).getTime() / 1000 : null;
+            const endDateNum = endDate ? new Date(endDate as string).getTime() / 1000 : null;
             const { limit, offset } = paginate(page, size);
             const taskReq = Builder<TaskReq>()
                 .limit(limit)
