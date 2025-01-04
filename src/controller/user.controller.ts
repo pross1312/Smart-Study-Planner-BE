@@ -5,8 +5,8 @@ import successHandler from '../utility/ResponseSuccess';
 const UserController = {
     async update(req: Request, res: Response, next: NextFunction) {
         try {
-            const user_id = ((req as any)?.user as any)?.id!;
-            const response = await UserService.update(req.body, req.files?.avatar, user_id);
+            const user = (req as any)?.user!;
+            const response = await UserService.update(req.body, req.files?.avatar, user);
             successHandler(res, response);
         } catch(error) {
             next(error);

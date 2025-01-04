@@ -4,6 +4,7 @@ import { debugLog } from "../log/logger";
 import { CLIENT_ADDR } from "../config/common";
 import authService from '../service/auth.service';
 import successHandler from '../utility/ResponseSuccess';
+import AppError from "../exception/appError";
 
 class authController {
     async register(req: Request, res: Response, next: NextFunction) {
@@ -11,7 +12,7 @@ class authController {
             await authService.register(req.body.email, req.body.password);
             successHandler(res, "Ok");
         } catch (error) {
-            next(error); 
+            next(error);
         }
     }
 
@@ -45,6 +46,35 @@ class authController {
             }
         } catch (error) {
             next(error)
+        }
+    }
+
+    async sendResetPasswordEmail(req: Request, res: Response, next: NextFunction) {
+        try {
+            const {email} = req.params;
+            await authService.sendResetPasswordEmail(email);
+            successHandler(res, "Successfully send reset password link");
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    async sendResetPasswordPage(req: Request, res: Response, next: NextFunction) {
+        try {
+            const {token} = req.query;
+            res.send(await authService.getResetPasswordPage(token));
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    async resetPassword(req: Request, res: Response, next: NextFunction) {
+        try {
+            const {token, password} = req.body;
+            await authService.resetPassword(token, password);
+            successHandler(res, "Successfully reset password");
+        } catch (err) {
+            next(err);
         }
     }
 }

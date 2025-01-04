@@ -10,9 +10,7 @@ const UserService = {
     if (user.id === undefined) throw new AppError("User is not undefined", 400);
     return user;
   },
-  async update(body: any, file: any, user_id: number) {
-    const users: Array<User> = await UserModel.find({ id: user_id });
-    const user: User = users[0];
+  async update(body: any, file: any, user: User) {
     if (user.id === undefined) {
         throw new AppError("User id is undefined", 400);
     }
@@ -28,14 +26,12 @@ const UserService = {
       imageUrl = result?.url ?? '';
     }
 
-    const updatedUser : User = {
-        id: user.id,
+    const updatedUser = {
         email: body.email == null ? user.email : body.email,
-        password: user.password,
         name: body.name == null ? user.name : body.name,
         avatar: imageUrl == '' ? user.avatar : imageUrl
     }
-    await UserModel.update(user.id, updatedUser); 
+    await UserModel.update({id: user.id}, updatedUser); 
     return {
       data: "Update profile successful",
       updatedUser
