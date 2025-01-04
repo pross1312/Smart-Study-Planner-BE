@@ -6,6 +6,7 @@ enum TaskStatus {
     Todo = "TODO",
     InProgress = "IN_PROGRESS",
     Done = "DONE",
+    Expired = "EXPIRED"
 }
 enum TaskPriority {
     Low = "LOW",
