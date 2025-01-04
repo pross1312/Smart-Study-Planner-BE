@@ -6,6 +6,7 @@ class TaskReq {
     priority: string | null;
     status: string | null;
     search: string | null;
+    sort_by: string | null;
 
     constructor(
         limit: number,
@@ -14,7 +15,8 @@ class TaskReq {
         endDate: number | null,
         priority: string | null,
         status: string | null,
-        search: string | null
+        search: string | null,
+        sort_by: string | null
     ) {
         this.limit = limit;
         this.offset = offset;
@@ -23,6 +25,7 @@ class TaskReq {
         this.priority = priority;
         this.status = status;
         this.search = search;
+        this.sort_by = sort_by;
     }
 }
 export default TaskReq;

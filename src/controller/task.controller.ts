@@ -1,10 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import TaskReq from '../exchange/req/task.req';
 import { Builder } from 'builder-pattern';
-import {Task} from "../model/task.model";
-import {User} from "../model/user.model";
 import {TaskService} from "../service/task.service";
-import {debugLog, setDebug} from "../log/logger";
 import successHandler from '../utility/ResponseSuccess';
 
 const paginate = (page: number, size: number) => {
@@ -19,7 +16,7 @@ const TaskController = {
             const user_id = ((req as any)?.user as any)?.id!;
             const page = parseInt(req.query.page as string) || 1;
             const size = parseInt(req.query.size as string) || 10;
-            const { startDate, endDate, priority, status, search } = req.query;
+            const { startDate, endDate, priority, status, search, sort_by } = req.query;
             const startDateNum = startDate ? +startDate : null;
             const endDateNum = endDate ? +endDate : null;
             const { limit, offset } = paginate(page, size);
@@ -31,6 +28,7 @@ const TaskController = {
                 .priority(priority as string || null)
                 .status(status as string || null)
                 .search(search as string || null)
+                .sort_by(sort_by as string || null)
                 .build();
             const data = await TaskService.list(user_id, taskReq);
             successHandler(res, data);

@@ -120,7 +120,7 @@ const TaskModel = {
 
     async getListTask(user_id: number, taskReq: TaskReq) {
         debugLog("GetListTask: Task request:", taskReq);
-        const { startDate, endDate, priority, status, limit, offset, search } = taskReq;
+        const { startDate, endDate, priority, status, limit, offset, search, sort_by } = taskReq;
 
         let args = [];
         let query = `SELECT * FROM task WHERE user_id = $1 AND is_deleted = false`;
@@ -148,12 +148,18 @@ const TaskModel = {
         }
 
         if (search) {
-            console.log(search)
             query += ` AND name ilike $${count++}`;
             args.push( "%" + search.trim() + "%");
         }
+        console.log(sort_by)
 
-        query += ` ORDER BY updated_date desc LIMIT $${count++} OFFSET $${count++}`;
+        if (sort_by) {
+            query += ` ORDER BY ${sort_by.trim()}`;
+        } else {
+            query += ` ORDER BY updated_date desc`;
+        }
+
+        query += ` LIMIT $${count++} OFFSET $${count++}`;
         args.push(limit, offset);
         debugLog(query, args);
         return await repo.exec("many", query, args) || [];
