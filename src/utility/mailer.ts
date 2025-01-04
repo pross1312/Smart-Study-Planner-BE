@@ -2,8 +2,8 @@ import nodemailer, {Transporter, SendMailOptions} from "nodemailer";
 import {Validator} from "./validator";
 import {debugLog} from "../log/logger";
 
-const mailerEmail = "smartstudyplanner25@gmail.com";
-const mailerPassword = "eyug gdsa fzha icvf";
+const mailerEmail = process.env.MAILER;
+const mailerPassword = process.env.MAILER_PASSWORD;
 
 interface SendMailResult {
     accepted: Array<string>;
@@ -35,7 +35,7 @@ const Mailer = {
 
             const transporter: Transporter = nodemailer.createTransport(mailerConfig);
             const mailOptions = {
-                from: mailerEmail,
+                from: "smartstudyplanner@gmail.com",
                 to,
                 subject,
                 html

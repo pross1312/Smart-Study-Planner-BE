@@ -201,7 +201,7 @@ class AuthService {
         </div>
 
         <div class="footer">
-            <p>If you have any questions, feel free to contact us at <a href="mailto:smartstudyplanner25@gmail.com">smartstudyplanner25@gmail.com</a>.</p>
+            <p>If you have any questions, feel free to contact us at <a href="mailto:helloeverybody648@gmail.com">smartstudyplanner25@gmail.com</a>.</p>
         </div>
     </div>
 
