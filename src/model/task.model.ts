@@ -239,7 +239,7 @@ const TaskModel = {
         return result.rowCount;
     },
 
-    async report(startDay: number, endDate: number) {
+    async report(startDay: number, endDate: number, user_id: number) {
         let args_count = 1;
         let args = [];
         let query = `
@@ -253,23 +253,28 @@ const TaskModel = {
                 '1 day'::interval
             ) AS series(day)
         LEFT JOIN task ON to_timestamp(task.created_date)::date = series.day::date
+        where user_id = $${args_count++}
         GROUP BY series.day
         ORDER BY series.day;
         `
-        args.push(startDay, endDate);
+        args.push(startDay, endDate, user_id);
         const result = await repo.exec("many", query, args)
         return result;
     },
 
-    async analytic() {
+    async analytic(user_id: number) {
+        let args_count = 1;
+        let args = [];
         let query = `
         SELECT
             task.status, COUNT(task.id) as quantity
         FROM
             task
+        where user_id = $${args_count++}
         GROUP BY task.status
         `
-        const result = await repo.exec("any", query)
+        args.push(user_id)
+        const result = await repo.exec("any", query, args)
         return result;
     },
     

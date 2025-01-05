@@ -85,9 +85,10 @@ const TaskController = {
 
     async report(req: Request, res: Response, next: NextFunction) {
         try {
+            const user_id = ((req as any)?.user as any)?.id!;
             const startDate = Number(req.query.startDate);
             const endDate = Number(req.query.endDate);
-            successHandler(res, await TaskService.report(startDate, endDate));
+            successHandler(res, await TaskService.report(startDate, endDate, user_id));
         } catch (err) {
             next(err);
         }
@@ -95,7 +96,8 @@ const TaskController = {
 
     async analytic(req: Request, res: Response, next: NextFunction) {
         try {
-            successHandler(res, await TaskService.analytic());
+            const user_id = ((req as any)?.user as any)?.id!;
+            successHandler(res, await TaskService.analytic(user_id));
         } catch (err) {
             next(err);
         }
