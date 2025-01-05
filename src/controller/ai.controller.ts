@@ -34,7 +34,8 @@ const AIController = {
 
     listModels(req: Request, res: Response, next: NextFunction) {
         try {
-            successHandler(res, AIService.listModels());
+            const user_id = ((req as any)?.user as any)?.id!;
+            successHandler(res, AIService.listModels(user_id));
         } catch (err) {
             next(err);
         }

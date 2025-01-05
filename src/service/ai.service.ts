@@ -103,13 +103,19 @@ Suggestion for task come first, then short explaination after
         return response.content;
     },
 
-    listModels(): Array<string> {
-        return Object.values(AI_MODEL);
+    listModels(user_id: any): {models: Array<string>, current: string} {
+        if (!Validator.isNumber(user_id, {start: 1})) throw new Error("Invalid userId from controller");
+        let model = AI_MODEL.GPT;
+        if (user_id in userToModels) model = userToModels[user_id];
+        return {
+            models: Object.values(AI_MODEL),
+            current: model,
+        }
     },
 
     switchModel(user_id: any, model: any) {
         if (!Validator.isNumber(user_id, {start: 1})) throw new Error("Invalid userId from controller");
-        if (!Validator.isEnum(model, AI_MODEL)) throw new AppError(`Invalid ai_model, must be one of ${this.listModels()}`, 400);
+        if (!Validator.isEnum(model, AI_MODEL)) throw new AppError(`Invalid ai_model, must be one of ${Object.values(AI_MODEL)}`, 400);
         userToModels[user_id] = model;
     },
 
