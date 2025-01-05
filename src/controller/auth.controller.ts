@@ -5,6 +5,7 @@ import { CLIENT_ADDR } from "../config/common";
 import authService from '../service/auth.service';
 import successHandler from '../utility/ResponseSuccess';
 import AppError from "../exception/appError";
+import { UserService } from "../service/user.service";
 
 class authController {
     async register(req: Request, res: Response, next: NextFunction) {
@@ -75,6 +76,26 @@ class authController {
             successHandler(res, "Successfully reset password");
         } catch (err) {
             next(err);
+        }
+    }
+
+    async getUserInfo(req: Request, res: Response, next: NextFunction) {
+        try {
+            const {userId} = req.params;
+            const response = await UserService.get(+userId);
+            successHandler(res, response);
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    async getLeaderboard(req: Request, res: Response, next: NextFunction) {
+        try {
+            const {page, page_size} = req.query;
+            const result = await UserService.getLeaderboard(page, page_size);
+            successHandler(res, result);
+        } catch(error) {
+            next(error);
         }
     }
 }
