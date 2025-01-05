@@ -34,7 +34,8 @@ const AIController = {
 
     listModels(req: Request, res: Response, next: NextFunction) {
         try {
-            successHandler(res, AIService.listModels());
+            const user_id = ((req as any)?.user as any)?.id!;
+            successHandler(res, AIService.listModels(user_id));
         } catch (err) {
             next(err);
         }
@@ -57,6 +58,16 @@ const AIController = {
             const user_id = ((req as any)?.user as any)?.id!;
             await AIService.clearChatHistory(user_id);
             successHandler(res, "Delete chat history successfully");
+        } catch (err) {
+            next(err);
+        }
+    },
+
+    async applySuggestion(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user_id = ((req as any)?.user as any)?.id!;
+            await AIService.applySuggestion(user_id, req.body);
+            successHandler(res, "Apply suggestion successfully");
         } catch (err) {
             next(err);
         }

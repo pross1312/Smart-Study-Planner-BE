@@ -9,5 +9,6 @@ router.get("/schedule/analytic", AIController.analyzeSchedule);
 router.get("/model", AIController.listModels);
 router.put("/model", AIController.switchModel);
 router.delete("/chat", AIController.clearChatHistory);
+router.post("/suggestion/apply", AIController.applySuggestion);
 
 export default router;
