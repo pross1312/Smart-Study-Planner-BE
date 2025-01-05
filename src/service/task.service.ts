@@ -53,6 +53,12 @@ const TaskService = {
         if (Validator.isValue(end_time) && !Validator.isNumber(end_time, {start: start_time})) {
             throw new AppError(`Invalid end_time, must be a positive number and bigger than start_time`, 400);
         }
+        if (Validator.isValue(start_time) && !Validator.isValue(status)) {
+            const currentTime = new Date().getTime()/1000; // seconds
+            if (currentTime < start_time) status = TaskStatus.Todo;
+            else if (currentTime >= end_time) status = TaskStatus.Expired;
+            else status = TaskStatus.InProgress;
+        }
         await TaskModel.save(new Task({
             user_id: user_id,
             name, status, description, priority, start_time, end_time
@@ -72,12 +78,25 @@ const TaskService = {
         if (Validator.isValue(updates.is_deleted) && Validator.parseBoolean(updates.is_deleted) === null) {
             throw new AppError(`Invalid is_deleted, must be a boolean`, 400);
         }
-        if (Validator.isValue(updates.start_time) && !Validator.isNumber(updates.start_time)) {
-            throw new AppError(`Invalid start_time, must be a positive number`, 400);
+
+        const oldTask = await TaskModel.findOne({id: Number(taskId)});
+        const end = Validator.isValue(updates.end_time) && Validator.isNumber(updates.end_time) ?
+                                                            updates.end_time : oldTask?.end_time;
+        if (Validator.isValue(updates.start_time) && !Validator.isNumber(updates.start_time, {end})) {
+            throw new AppError(`Invalid start_time, must be a positive number and smaller than end_time (old|new)`, 400);
         }
-        let end_start = Validator.isValue(updates.start_time) ? updates.start_time : 0;
-        if (Validator.isValue(updates.end_time) && !Validator.isNumber(updates.end_time, {start: end_start})) {
-            throw new AppError(`Invalid end_time, must be a positive number and bigger than start_time`, 400);
+
+        const start = Validator.isValue(updates.start_time) && Validator.isNumber(updates.start_time) ?
+                                                            updates.start_time : oldTask?.start_time;
+        if (Validator.isValue(updates.end_time) && !Validator.isNumber(updates.end_time, {start})) {
+            throw new AppError(`Invalid end_time, must be a positive number and bigger than start_time (old|new)`, 400);
+        }
+        if (!Validator.isValue(updates.status)) {
+            const currentTime = new Date().getTime()/1000; // seconds
+            if (Validator.isNumber(start) && currentTime < start!) updates.status = TaskStatus.Todo;
+            else if (Validator.isNumber(end) && currentTime >= end!) updates.status = TaskStatus.Expired;
+            else if (Validator.isNumber(start) && Validator.isNumber(end)) updates.status = TaskStatus.InProgress;
+            else updates.status = TaskStatus.Todo;
         }
         const rowUpdated = await TaskModel.update({user_id: userId, id: Number(taskId)}, updates);
         return rowUpdated;

@@ -15,7 +15,7 @@ const userToModels: {[key: string]: AI_MODEL} = {
 }
 
 function getModel(user_id: any): AIModel {
-    if (!(user_id in userToModels)) userToModels[user_id] = AI_MODEL.Gemini;
+    if (!(user_id in userToModels)) userToModels[user_id] = AI_MODEL.GPT;
     switch (userToModels[user_id]) {
         case AI_MODEL.GPT: return GPTModel;
         case AI_MODEL.Gemini: return GeminiModel;
@@ -77,11 +77,13 @@ export const AIService = {
             {
                 role: Role.User,
                 content:`Smart Study Planner application.
-I need you to review the following tasks (in json format) and give me meaningful suggestion about 'status', 'priority', 'start_time', 'end_time' of the task.
+I need you to review the following tasks (in json format) and give me meaningful suggestion about 'status'('TODO', 'EXPIRED', 'DONE', 'IN_PROGRESS'), 'priority'('HIGH', 'MEDIUM', 'LOW'), 'start_time', 'end_time' of the task.
 Each in the same json format the same as i provided.
 Current date: ${new Date()}.
-Give a short explaination about your suggestion, but no need to format it (like bold, list, etc...).
-Give me time using the following format: YYYY/MM/DD HH:MM:SS`
+Give a short explaination about your suggestion.
+Give me time using the following format: YYYY/MM/DD HH:MM:SS
+Suggestion for task come first, then short explaination after
+`
             },
             ...allTasks
         ];

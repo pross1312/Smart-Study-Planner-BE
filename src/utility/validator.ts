@@ -1,10 +1,10 @@
 const Validator = {
-    isNumber(x: any, range?: {start?: number, end?: number}): boolean {
+    isNumber(x: any, range?: {start?: number | null, end?: number | null}): boolean {
         if (x === null || x === undefined) return false;
         const num = Number(x);
         if (isNaN(num)) return false;
-        if (Validator.isValue(range?.start) && num < range?.start!) return false;
-        if (Validator.isValue(range?.end) && num > range?.end!) return false;
+        if (Validator.isNumber(range?.start) && num < range?.start!) return false;
+        if (Validator.isNumber(range?.end) && num > range?.end!) return false;
         return true;
     },
 

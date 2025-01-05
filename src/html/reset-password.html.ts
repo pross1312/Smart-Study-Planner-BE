@@ -122,7 +122,7 @@ export default `
             if (newPassword !== confirmPassword) {
                 errorMessage.textContent = 'Passwords do not match. Please try again.';
                 errorMessage.style.display = 'block';
-            } else if (newPassword.length < 8) {
+            } else if (newPassword.length < 6) {
                 errorMessage.textContent = 'Password must be at least 8 characters long.';
                 errorMessage.style.display = 'block';
             } else {

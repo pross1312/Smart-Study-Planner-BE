@@ -25,7 +25,7 @@ class _GeminiModel implements AIModel {
         if (!useMarkDown) {
             _chatHistory.push({
                 role: Role.User,
-                content: "Don't use markdown in your response!!! And don't say anything about markdown either, don't mark JSON as with ``` as well, just give me plain json text!!!",
+                content: "Response with plain text format",
             });
         }
         debugLog(JSON.stringify(_chatHistory, null, 2));
