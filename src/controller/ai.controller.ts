@@ -61,6 +61,16 @@ const AIController = {
         } catch (err) {
             next(err);
         }
+    },
+
+    async applySuggestion(req: Request, res: Response, next: NextFunction) {
+        try {
+            const user_id = ((req as any)?.user as any)?.id!;
+            await AIService.applySuggestion(user_id, req.body);
+            successHandler(res, "Apply suggestion successfully");
+        } catch (err) {
+            next(err);
+        }
     }
 };
 

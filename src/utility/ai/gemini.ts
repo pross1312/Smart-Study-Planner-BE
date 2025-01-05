@@ -40,7 +40,7 @@ class _GeminiModel implements AIModel {
         debugLog(debugLog(JSON.stringify(result, null, 2)));
         return {
             role: Role.Model,
-            content: result.response.text()
+            content: result?.response?.text()?.trim()
         };
     }
 }

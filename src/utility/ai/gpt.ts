@@ -33,7 +33,7 @@ class _GPTModel implements AIModel {
                     } else if (typeof data.choices[0]?.message?.content !== "string") {
                         reject(new Error("Missing content"));
                     } else {
-                        resolve(data.choices[0]?.message?.content);
+                        resolve(data.choices[0]?.message?.content?.trim());
                     }
                 } else {
                     reject(data);
@@ -77,7 +77,7 @@ class _GPTModel implements AIModel {
                     } else {
                         resolve({
                             role: Role.Model,
-                            content: data.choices[0]?.message?.content
+                            content: data.choices[0]?.message?.content?.trim()
                         });
                     }
                 } else {
