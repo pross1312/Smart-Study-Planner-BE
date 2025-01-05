@@ -138,6 +138,11 @@ Give me time using the following format: YYYY/MM/DD HH:MM:SS.
             }
             const aiResponse = JSON.parse(response.content);
             for (const suggestion of aiResponse) {
+                // default gemini is explanation ??? bug
+                if ("explanation" in suggestion && !("explaination" in suggestion)) {
+                    suggestion["explaination"] = suggestion["explanation"];
+                }
+
                 if (!Validator.isNumber(suggestion?.id) || !("name" in suggestion) || !("explaination" in suggestion) || !("changes" in suggestion)) {
                     throw new Error(`Invalid response format from ai ${JSON.stringify(suggestion, null, 2)}`);
                 }
