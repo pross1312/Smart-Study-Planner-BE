@@ -45,7 +45,6 @@ const AIController = {
         try {
             const user_id = ((req as any)?.user as any)?.id!;
             const {model} = req.body;
-            await AIService.clearChatHistory(user_id);
             AIService.switchModel(user_id, model);
             successHandler(res, "Switch model successfully");
         } catch (err) {
