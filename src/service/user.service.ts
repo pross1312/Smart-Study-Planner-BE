@@ -8,7 +8,7 @@ const UserService = {
     const users = await UserModel.find({ id });
     const user: User = users[0];
     if (user.id === undefined) throw new AppError("User is not undefined", 400);
-    return user;
+    return {...user, password: undefined};
   },
   async update(body: any, file: any, user: User) {
     if (user.id === undefined) {

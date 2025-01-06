@@ -85,7 +85,7 @@ class AuthService {
         await UserModel.save(newUser);
     }
 
-    async login(email: string, password: string): Promise<{token: string, expired: string}> {
+    async login(email: string, password: string): Promise<{token: string, expired: string, user_id: number}> {
         const user: User | null = await UserModel.findOne({ email });
         if (!user || !user.password) {
             throw new AppError("User not found or password missing", 400);;
@@ -99,15 +99,17 @@ class AuthService {
         return {
             token,
             expired: jwtExpired,
+            user_id: user.id!,
         };
     }
 
-    async googleLogin(user_id: number): Promise<{token: string, expired: string}> {
+    async googleLogin(user_id: number): Promise<{token: string, expired: string, user_id: number}> {
         const token = this.generateToken(user_id);
 
         return {
             token,
             expired: jwtExpired,
+            user_id: user_id,
         };
     }
 
