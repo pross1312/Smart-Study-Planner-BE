@@ -252,8 +252,7 @@ const TaskModel = {
                 to_timestamp($${args_count++}), 
                 '1 day'::interval
             ) AS series(day)
-        LEFT JOIN task ON to_timestamp(task.created_date)::date = series.day::date
-        where user_id = $${args_count++}
+        LEFT JOIN task ON to_timestamp(task.created_date)::date = series.day::date and user_id = $${args_count++}
         GROUP BY series.day
         ORDER BY series.day;
         `
