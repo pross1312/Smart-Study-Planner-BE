@@ -74,20 +74,12 @@ OFFSET
 $$
 LANGUAGE SQL;
 
--- Inserting 3 example tasks
--- INSERT INTO task (user_id, name, description, status, priority, created_date, updated_date, is_deleted)
--- VALUES
--- (1, 'Task 1', 'Description for task 1', 'IN_PROGRESS', 'HIGH', (EXTRACT(EPOCH FROM now()))::BIGINT, (EXTRACT(EPOCH FROM now()))::BIGINT, false),
--- (2, 'Task 2', 'Description for task 2', 'DONE', 'LOW', (EXTRACT(EPOCH FROM now()))::BIGINT, (EXTRACT(EPOCH FROM now()))::BIGINT, false),
--- (3, 'Task 3', 'Description for task 3', 'TODO', 'MEDIUM', (EXTRACT(EPOCH FROM now()))::BIGINT, (EXTRACT(EPOCH FROM now()))::BIGINT, false);
-
--- Insert dummy data into the "pomodoro_history" table
 INSERT INTO public.users (email,"password","name",avatar) VALUES
 	 ('dangvinhtuong12@gmail.com','$2b$10$LUocZYJXdLhzXMmdpPB9Te0COG1MrLPLf.5jdCmzGrjhTWMG9ye8u',NULL,NULL),
-	 ('tuong@gmail.com','$2b$10$Vp/EzF4n7tg9tC1gsGhWweT1zOQ3FFPA.Y1jcQTv.yyBDmfex68Ry',NULL,NULL),
-	 ('tuong12@gmail.com','$2b$10$6aHGMOG3oJvrDtKeHh93BOniUi32vYfIqJNS7W8EknX0loY4eyEEy',NULL,NULL),
-	 ('tuong123@gmail.com','$2b$10$KXqWdfPTENQYWvGbfYWgkOrAq2E6obvvSxdkvIrKNrCusnOlcfytq',NULL,NULL),
-	 ('tuong12323@gmail.com','$2b$10$6ia5kWWFDlGGXWntA5TiWOMlN9FO/0Xbf.QkwySZEoW2EXprTTzSi',NULL,NULL);
+	 ('phamhuy1112003@gmail.com','$2b$10$jg5sp5EbPQDzzMs9bwdLBeTZT3LIFqBlyNIQsmoZAQ2hp3QcOYZx.','Peter Pham','http://res.cloudinary.com/dupsdtrvy/image/upload/v1736056334/images/1736056332444.png'),
+	 ('tlvu0512@gmail.com','$2b$10$oLuIdaKK0CXxqLYaL776TeBKl5goBc7JoA9D58s9UekV6sjQNDj6G','Trinh Long Vu','https://media.licdn.com/dms/image/v2/D5635AQGbkRZbSYAxCA/profile-framedphoto-shrink_400_400/profile-framedphoto-shrink_400_400/0/1728469761148?e=1736672400&v=beta&t=iWQ7WJz_Sezd4i2guZ1p2qnsLI6I7z4ajkDnGvRYIRg');
+
+-- Insert dummy data into the "pomodoro_history" table
 INSERT INTO "pomodoro_history" (user_id, start_time, end_time, span)
 VALUES
     (1, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 08:00:00'))::BIGINT, (EXTRACT(EPOCH FROM TIMESTAMP '2024-12-28 08:25:00'))::BIGINT, 1500),

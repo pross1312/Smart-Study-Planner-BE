@@ -14,7 +14,7 @@ import aiRoute from "./route/ai.route";
 import {debugLog, setDebug} from "./log/logger";
 import errorHandler from './middleware/errorHandler';
 import {AuthGuard} from './middleware/auth-guard.middleware';
-import { CLIENT_ADDR } from "./config/common";
+import { CONFIG } from "./config/common";
 import cors from 'cors'
 
 setDebug(true);
@@ -44,10 +44,28 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 });
 
 app.use(cors({
-    origin: CLIENT_ADDR,
+    origin: [
+        "http://localhost:5173",
+        "https://smart-study-planner-fe.vercel.app",
+        "https://pross1312.github.io"
+    ],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
 }))
+app.use((req: Request, res: Response, next: NextFunction) => {
+    const origins = [
+        "http://localhost:5173",
+        "https://smart-study-planner-fe.vercel.app",
+        "https://pross1312.github.io"
+    ];
+    const reqOrigin = req.headers.origin || "";
+    console.log(origins);
+    console.log(reqOrigin);
+    if (origins.includes(reqOrigin)) {
+        CONFIG.CLIENT_ADDR = reqOrigin;
+    }
+    next();
+});
 
 app.use(session_handler);
 app.use(express.json());

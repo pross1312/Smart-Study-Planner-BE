@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { User } from "../model/user.model";
 import { debugLog } from "../log/logger";
-import { CLIENT_ADDR } from "../config/common";
+import { CONFIG } from "../config/common";
 import authService from '../service/auth.service';
 import successHandler from '../utility/ResponseSuccess';
 import AppError from "../exception/appError";
@@ -41,7 +41,7 @@ class authController {
         try {
             if ('user' in req) {
                 const response = await authService.googleLogin((req.user as User).id!)
-                res.redirect(`${CLIENT_ADDR}/google/callback?token=${response.token}`);
+                res.redirect(`${CONFIG.CLIENT_ADDR}/Smart-Study-Planner-FE/google/callback?token=${response.token}`);
             } else {
                 throw new Error("Missing 'user' from passport, check passport configuration again.");
             }

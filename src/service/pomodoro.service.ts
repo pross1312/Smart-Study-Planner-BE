@@ -70,15 +70,15 @@ const PomodoroService = {
             {user_id},
             {pomodoro_time, break_time, long_break_time}
         );
-        if (rowCount == 0) { // insert a new one
-            const newSetting = new PomodoroSetting({
-                user_id,
-                pomodoro_time: Validator.isNumber(pomodoro_time) ? Number(pomodoro_time) : undefined,
-                break_time: Validator.isNumber(break_time) ? Number(break_time) : undefined,
-                long_break_time: Validator.isNumber(long_break_time) ? Number(long_break_time) : undefined,
-            })
-            await PomodoroSettingModel.save(newSetting);
-        }
+        // if (rowCount == 0) { // insert a new one
+        //     const newSetting = new PomodoroSetting({
+        //         user_id,
+        //         pomodoro_time: Validator.isNumber(pomodoro_time) ? Number(pomodoro_time) : undefined,
+        //         break_time: Validator.isNumber(break_time) ? Number(break_time) : undefined,
+        //         long_break_time: Validator.isNumber(long_break_time) ? Number(long_break_time) : undefined,
+        //     })
+        //     await PomodoroSettingModel.save(newSetting);
+        // }
     }
 };
 
